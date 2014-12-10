@@ -5,29 +5,25 @@
  */
 package org.mifos.sdk.internal;
 
-import com.google.gson.JsonObject;
-import retrofit.Callback;
 import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Query;
 
 /**
- * Retrofit service interface for authentication with the MifosX platform
+ * Retrofit service interface for authentication with the MifosX platform.
  */
-interface RetrofitMifosService {
+public interface RetrofitMifosService {
 
     /**
-     * Authenticates and obtains an authentication key
+     * Authenticates and obtains an authentication key.
      * or throws an exception for invalid credentials
      * @param username the username for authentication
      * @param password the password for authentication
      * @param tenantId the tenant identifier for authentication
-     * @param callback the callback method to handle the server response
      */
     @POST("/authentication")
-    public void authenticate(@Query("username") String username,
-                             @Query("password") String password,
-                             @Header("X-Mifos-Platform-TenantId") String tenantId,
-                             Callback<JsonObject> callback);
+    public AuthenticationToken authenticate(@Query("username") String username,
+                                            @Query("password") String password,
+                                            @Header("X-Mifos-Platform-TenantId") String tenantId);
 
 }

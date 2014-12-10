@@ -5,13 +5,9 @@
  */
 package org.mifos.sdk.internal;
 
-import com.google.gson.JsonObject;
-import com.squareup.okhttp.OkHttpClient;
-import retrofit.Callback;
+import org.mifos.sdk.MifosXConnectException;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.client.OkClient;
-import retrofit.client.Response;
 
 import org.mifos.sdk.MifosXClient;
 import org.mifos.sdk.MifosXProperties;
@@ -22,8 +18,8 @@ import org.mifos.sdk.MifosXProperties;
  */
 public class RestMifosXClient implements MifosXClient {
 
-    private MifosXProperties connectionProperties;
-    private RestAdapter restAdapter;
+    private final MifosXProperties connectionProperties;
+    private final RestAdapter restAdapter;
     private String authenticationKey;
     private boolean loggedIn;
 
@@ -32,13 +28,11 @@ public class RestMifosXClient implements MifosXClient {
      * with parameter properties.
      * @param properties the {@link MifosXProperties} for authentication
      */
-    public RestMifosXClient(final MifosXProperties properties) {
+    public RestMifosXClient(final MifosXProperties properties,
+                            final RestAdapter adapter) {
         super();
         this.connectionProperties = properties;
-        this.restAdapter = new RestAdapter.Builder()
-                           .setClient(new OkClient(new OkHttpClient()))
-                           .setEndpoint(this.connectionProperties.getUrl())
-                           .build();
+        this.restAdapter = adapter;
         this.authenticationKey = null;
         this.loggedIn = false;
     }
@@ -46,16 +40,39 @@ public class RestMifosXClient implements MifosXClient {
     /**
      * Overridden method to authenticate and obtain a valid
      * authentication key from the MifosX server.
+     * @throws MifosXConnectException
      */
     @Override
-    public void login() {
+    public void login() throws MifosXConnectException {
         if (!loggedIn) {
-            final RetrofitMifosService mifosService = this.restAdapter.create(RetrofitMifosService.class);
-            mifosService.authenticate(this.connectionProperties.getUsername(),
-                                      this.connectionProperties.getPassword(),
-                                      this.connectionProperties.getTenant(),
-                                      responseCallback);
+            try {
+                final RetrofitMifosService mifosService = this.restAdapter.create(RetrofitMifosService.class);
+                final AuthenticationToken authenticationToken = mifosService.authenticate(this.connectionProperties.getUsername(),
+                        this.connectionProperties.getPassword(),
+                        this.connectionProperties.getTenant());
+                this.authenticationKey = authenticationToken.getAuthenticationToken();
+                this.loggedIn = true;
+            } catch (RetrofitError error) {
+                if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                    throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+                } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                           error.getResponse().getStatus() == 401) {
+                    this.loggedIn = false;
+                    this.authenticationKey = null;
+                    throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                } else {
+                    throw new MifosXConnectException(ErrorCode.UNKNOWN);
+                }
+            }
         }
+    }
+
+    /**
+     * Returns the authentication key.
+     * @return the authentication key obtained by calling {@link #login()}
+     */
+    String getAuthenticationKey() {
+        return this.authenticationKey;
     }
 
     /**
@@ -71,22 +88,5 @@ public class RestMifosXClient implements MifosXClient {
     public boolean isLoggedIn() {
         return this.loggedIn;
     }
-
-    /**
-     * Callback method to handle response from server
-     * after authentication attempt.
-     */
-    private Callback<JsonObject> responseCallback = new Callback<JsonObject>() {
-        @Override
-        public void success(JsonObject jsonObject, Response response) {
-            authenticationKey = jsonObject.get("base64EncodedAuthenticationKey").getAsString();
-            loggedIn = true;
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-
-        }
-    };
 
 }

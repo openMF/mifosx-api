@@ -5,7 +5,10 @@
  */
 package org.mifos.sdk;
 
+import com.squareup.okhttp.OkHttpClient;
 import org.mifos.sdk.internal.RestMifosXClient;
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
 
 /**
  * Utility class to return instances of {@link MifosXClient}
@@ -17,7 +20,11 @@ public final class MifosXClientFactory {
      * @param properties the {@link MifosXProperties} for authentication
      */
     public static MifosXClient get(final MifosXProperties properties) {
-        return new RestMifosXClient(properties);
+        final RestAdapter restAdapter = new RestAdapter.Builder()
+                .setClient(new OkClient(new OkHttpClient()))
+                .setEndpoint(properties.getUrl())
+                .build();
+        return new RestMifosXClient(properties, restAdapter);
     }
 
 }
