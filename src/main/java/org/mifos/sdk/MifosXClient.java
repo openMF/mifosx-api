@@ -13,13 +13,14 @@ public interface MifosXClient {
     /**
      * Authenticates into the MifosX server by obtaining an authentication key.
      * If a valid authentication key already exists, this method does nothing.
+     * @throws MifosXConnectException
      */
-    abstract void login();
+    void login() throws MifosXConnectException;
 
     /**
      * Deletes the authnetication key. To be able to carry further operations,
      * you must call {@link #login()} to obtain a new authentication key.
      */
-    abstract void logout();
+    void logout();
 
 }
