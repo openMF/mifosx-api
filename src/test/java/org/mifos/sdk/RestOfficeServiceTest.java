@@ -6,9 +6,9 @@
 package org.mifos.sdk;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +39,8 @@ public class RestOfficeServiceTest {
     private Office defaultOffice;
     private Long defaultOfficeId;
     private RestOfficeService officeService;
+    private String defaultDuplicateJSON;
+    private String defaultDuplicateMessage;
 
     /**
      * Setup all the components before testing.
@@ -62,6 +64,8 @@ public class RestOfficeServiceTest {
         this.defaultOfficeId = (long)1;
         this.officeService = new RestOfficeService(this.properties, this.restAdapter,
                 this.mockedAuthKey);
+        this.defaultDuplicateJSON = "{\"defaultUserMessage\": \"some random message\"}";
+        this.defaultDuplicateMessage = "some random message";
 
         when(this.restAdapter.create(RetrofitOfficeService.class)).thenReturn(this.retrofitOfficeService);
     }
@@ -77,11 +81,13 @@ public class RestOfficeServiceTest {
         when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenReturn(mockedOffice);
 
         try {
-            Long id = this.officeService.createOffice(defaultOffice);
+            Long id = this.officeService.createOffice(this.defaultOffice);
 
             Assert.assertNotNull(id);
             Assert.assertEquals(id, this.defaultOfficeId);
         } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
             Assert.fail();
         }
     }
@@ -94,15 +100,43 @@ public class RestOfficeServiceTest {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
-        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenThrow(error);
+        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),
+                this.defaultOffice)).thenThrow(error);
 
         try {
-            this.officeService.createOffice(defaultOffice);
+            this.officeService.createOffice(this.defaultOffice);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for createOffice().
+     */
+    @Test
+    public void testCreateOfficeDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(),
+                new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),
+                this.defaultOffice)).thenThrow(error);
+
+        try {
+            this.officeService.createOffice(this.defaultOffice);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
         }
     }
 
@@ -117,12 +151,14 @@ public class RestOfficeServiceTest {
         when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenThrow(error);
 
         try {
-            this.officeService.createOffice(defaultOffice);
+            this.officeService.createOffice(this.defaultOffice);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
@@ -135,15 +171,18 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenThrow(error);
+        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),
+                this.defaultOffice)).thenThrow(error);
 
         try {
-            this.officeService.createOffice(defaultOffice);
+            this.officeService.createOffice(this.defaultOffice);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
@@ -159,12 +198,14 @@ public class RestOfficeServiceTest {
         when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenThrow(error);
 
         try {
-            this.officeService.createOffice(defaultOffice);
+            this.officeService.createOffice(this.defaultOffice);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
@@ -173,10 +214,10 @@ public class RestOfficeServiceTest {
      */
     @Test
     public void testFetchOffices() {
-        final List officesList = Arrays.asList(defaultOffice, defaultOffice);
+        final List officesList = Arrays.asList(this.defaultOffice, this.defaultOffice);
 
-        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey, this.properties.getTenant()))
-                .thenReturn(officesList);
+        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
+                this.properties.getTenant())).thenReturn(officesList);
 
          try {
              final List<Office> responseOffices = this.officeService.fetchOffices();
@@ -196,8 +237,8 @@ public class RestOfficeServiceTest {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
-        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey, this.properties.getTenant()))
-                .thenThrow(error);
+        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
+                this.properties.getTenant())).thenThrow(error);
 
         try {
             this.officeService.fetchOffices();
@@ -217,8 +258,8 @@ public class RestOfficeServiceTest {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
-        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey, this.properties.getTenant()))
-                .thenThrow(error);
+        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
+                this.properties.getTenant())).thenThrow(error);
 
         try {
             this.officeService.fetchOffices();
@@ -239,8 +280,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey, this.properties.getTenant()))
-                .thenThrow(error);
+        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
+                this.properties.getTenant())).thenThrow(error);
 
         try {
             this.officeService.fetchOffices();
@@ -261,8 +302,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey, this.properties.getTenant()))
-                .thenThrow(error);
+        when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
+                this.properties.getTenant())).thenThrow(error);
 
         try {
             this.officeService.fetchOffices();
@@ -280,14 +321,16 @@ public class RestOfficeServiceTest {
     @Test
     public void testFindOffice() {
         when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenReturn(defaultOffice);
+                this.defaultOfficeId)).thenReturn(this.defaultOffice);
 
         try {
-            Office responseOffice = this.officeService.findOffice(this.defaultOfficeId);
+            final Office responseOffice = this.officeService.findOffice(this.defaultOfficeId);
 
             Assert.assertNotNull(responseOffice);
             Assert.assertThat(responseOffice, equalTo(this.defaultOffice));
         } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
             Assert.fail();
         }
     }
@@ -310,6 +353,32 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for findOffice().
+     */
+    @Test
+    public void testFindOfficeDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
+                this.defaultOfficeId)).thenThrow(error);
+
+        try {
+            this.officeService.findOffice(this.defaultOfficeId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
         }
     }
 
@@ -331,6 +400,32 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for findOffice().
+     */
+    @Test
+    public void testFindOfficeNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
+                this.defaultOfficeId)).thenThrow(error);
+
+        try {
+            this.officeService.findOffice(this.defaultOfficeId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch(MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.OFFICE_NOT_FOUND.getMessage());
         }
     }
 
@@ -353,6 +448,8 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+        } catch(MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
@@ -375,6 +472,8 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
@@ -396,6 +495,32 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for updateOffice().
+     */
+    @Test
+    public void testUpdateOfficeDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitOfficeService).updateOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId, this.defaultOffice);
+
+        try {
+            this.officeService.updateOffice(this.defaultOfficeId, this.defaultOffice);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
         }
     }
 
@@ -418,11 +543,37 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 
     /**
-     * Test for {@link ErrorCode#UNKNOWN} exception for findOffice().
+     * Test for not found exception for updateOffice().
+     */
+    @Test
+    public void testUpdateOfficeNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitOfficeService).updateOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId, this.defaultOffice);
+
+        try {
+            this.officeService.updateOffice(this.defaultOfficeId, this.defaultOffice);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.OFFICE_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for updateOffice().
      */
     @Test
     public void testUpdateOfficeUnknownException() {
@@ -440,6 +591,8 @@ public class RestOfficeServiceTest {
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
             Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
         }
     }
 

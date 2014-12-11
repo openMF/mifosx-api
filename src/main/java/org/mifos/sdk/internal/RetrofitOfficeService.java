@@ -26,6 +26,7 @@ public interface RetrofitOfficeService {
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
      * @param office the {@link Office} object with the details of the office
+     * @return an {@link Office} with the office ID and the resource ID
      */
     @POST("/offices")
     public Office createOffice(@Header("Authorization: Basic") String authenticationKey,
@@ -37,6 +38,7 @@ public interface RetrofitOfficeService {
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
+     * @return a list of all available {@link Office}s
      */
     @GET("/offices")
     public List<Office> fetchOffices(@Header("Authorization: Basic") String authenticationKey,
@@ -48,6 +50,7 @@ public interface RetrofitOfficeService {
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
      * @param id the office ID
+     * @return a {@link Office} with the details of the searched office
      */
     @GET("/offices/{id}")
     public Office findOffice(@Header("Authorization: Basic") String authenticationKey,
@@ -55,7 +58,7 @@ public interface RetrofitOfficeService {
                              @Path("id") Long id);
 
     /**
-     *
+     * Updates an office.
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
