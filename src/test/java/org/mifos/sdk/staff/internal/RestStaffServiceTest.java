@@ -63,7 +63,8 @@ public class RestStaffServiceTest {
         this.defaultStaffId = (long)1;
         this.staffService = new RestStaffService(this.properties, this.restAdapter,
                 this.mockedAuthKey);
-        this.defaultDuplicateJSON = "{\"defaultUserMessage\": \"some random message\"}";
+        this.mockedAuthKey = "Basic " + this.mockedAuthKey;
+        this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
         this.defaultDuplicateMessage = "some random message";
         this.defaultStatus = "all";
 
@@ -132,7 +133,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -164,7 +165,7 @@ public class RestStaffServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for createStaff().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for createStaff().
      */
     @Test
     public void testCreateStaffInvalidAuthKeyException() {
@@ -181,7 +182,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -269,12 +270,12 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         }
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for fetchStaff().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for fetchStaff().
      */
     @Test
     public void testFetchStaffInvalidAuthKeyException() {
@@ -291,7 +292,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         }
     }
 
@@ -378,7 +379,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -410,7 +411,7 @@ public class RestStaffServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for findStaff().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for findStaff().
      */
     @Test
     public void testFindStaffInvalidAuthKeyException() {
@@ -427,7 +428,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -543,7 +544,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -575,7 +576,7 @@ public class RestStaffServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for findStaffByStatus().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for findStaffByStatus().
      */
     @Test
     public void testFindStaffByStatusInvalidAuthKeyException() {
@@ -592,7 +593,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -694,7 +695,7 @@ public class RestStaffServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for updateStaff().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for updateStaff().
      */
     @Test
     public void testUpdateStaffInvalidAuthKeyException() {
@@ -711,7 +712,7 @@ public class RestStaffServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }

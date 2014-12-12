@@ -5,6 +5,7 @@
  */
 package org.mifos.sdk.office.internal;
 
+import org.mifos.sdk.internal.RestConstants;
 import org.mifos.sdk.office.domain.Office;
 import retrofit.http.Body;
 import retrofit.http.GET;
@@ -29,8 +30,8 @@ public interface RetrofitOfficeService {
      * @return an {@link Office} with the office ID and the resource ID
      */
     @POST("/offices")
-    public Office createOffice(@Header("Authorization: Basic") String authenticationKey,
-                               @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public Office createOffice(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                               @Header(RestConstants.HEADER_TENANTID) String tenantId,
                                @Body Office office);
 
     /**
@@ -41,8 +42,8 @@ public interface RetrofitOfficeService {
      * @return a list of all available {@link Office}s
      */
     @GET("/offices")
-    public List<Office> fetchOffices(@Header("Authorization: Basic") String authenticationKey,
-                                     @Header("X-Mifos-Platform-TenantId") String tenantId);
+    public List<Office> fetchOffices(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                     @Header(RestConstants.HEADER_TENANTID) String tenantId);
 
     /**
      * Retrieves one particular office.
@@ -53,8 +54,8 @@ public interface RetrofitOfficeService {
      * @return a {@link Office} with the details of the searched office
      */
     @GET("/offices/{id}")
-    public Office findOffice(@Header("Authorization: Basic") String authenticationKey,
-                             @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public Office findOffice(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                             @Header(RestConstants.HEADER_TENANTID) String tenantId,
                              @Path("id") Long id);
 
     /**
@@ -66,8 +67,8 @@ public interface RetrofitOfficeService {
      * @param newOffice an {@link Office} object with the changes to be made
      */
     @PUT("/offices/{id}")
-    public void updateOffice(@Header("Authorization: Basic") String authenticationKey,
-                             @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public void updateOffice(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                             @Header(RestConstants.HEADER_TENANTID) String tenantId,
                              @Path("id") Long id,
                              @Body Office newOffice);
 

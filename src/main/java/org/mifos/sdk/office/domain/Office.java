@@ -6,6 +6,12 @@
 package org.mifos.sdk.office.domain;
 
 import com.google.common.base.Preconditions;
+import org.joda.time.LocalDate;
+import org.mifos.sdk.internal.DateParser;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Gives an interface to communicate with the Office API.
@@ -41,7 +47,7 @@ public class Office {
         }
 
         /**
-         * Optional method to set the date format.
+         * Sets the date format, cannot be null.
          * @param format the date format
          * @return instance of the current {@link Builder}
          */
@@ -51,7 +57,7 @@ public class Office {
         }
 
         /**
-         * Optional method to set the locale.
+         * Sets the locale, cannot be null.
          * @param lang the locale, 'en' for instance
          * @return instance of the current {@link Builder}
          */
@@ -61,7 +67,7 @@ public class Office {
         }
 
         /**
-         * Sets the opening date of the office.
+         * Sets the opening date of the office, cannot be null.
          * @param date the opening date
          * @return instance of the current {@link Builder}
          */
@@ -74,7 +80,7 @@ public class Office {
         }
 
         /**
-         * Sets the parent ID of the office.
+         * Sets the parent ID of the office, cannot be null.
          * @param id the parent ID
          * @return instance of the current {@link Builder}
          */
@@ -99,7 +105,8 @@ public class Office {
         }
 
         /**
-         * Constructs a new Office instance
+         * Constructs a new Office instance. Throws IllegalArgumentException if the
+         * date, date format and/or the locale is/are invalid.
          * with the provided parameters.
          * @return a new instance of {@link Office}
          */
@@ -107,6 +114,10 @@ public class Office {
             Preconditions.checkNotNull(this.name);
             Preconditions.checkNotNull(this.parentId);
             Preconditions.checkNotNull(this.openingDate);
+            Preconditions.checkNotNull(this.dateFormat);
+            Preconditions.checkNotNull(this.locale);
+
+            DateParser.checkForValidDate(this.openingDate, this.dateFormat, this.locale);
 
             return new Office(this.name, this.nameDecorated, this.dateFormat,
                               this.locale, this.openingDate, this.parentId, this.externalId);
@@ -120,7 +131,8 @@ public class Office {
     private String nameDecorated;
     private String dateFormat;
     private String locale;
-    private String openingDate;
+    //private String openingDate;
+    private List<String> openingDate;
     private Long parentId;
     private String externalId;
 
@@ -131,7 +143,7 @@ public class Office {
         this.nameDecorated = officeNameDecorated;
         this.dateFormat = format;
         this.locale = lang;
-        this.openingDate = date;
+        this.openingDate = Arrays.asList(date);
         this.parentId = officeParentId;
         this.externalId = officeExternalId;
     }
@@ -182,7 +194,12 @@ public class Office {
      * Returns the opening date.
      */
     public String getOpeningDate() {
-        return this.openingDate;
+        if (this.openingDate.size() == 1) {
+            return this.openingDate.get(0);
+        } else {
+            final LocalDate localDate = DateParser.parseFromList(this.openingDate);
+            return localDate.toString(this.dateFormat, new Locale(this.locale));
+        }
     }
 
     /**
@@ -200,7 +217,8 @@ public class Office {
     }
 
     /**
-     * Sets the name of the office.
+     * Sets the name of the office, cannot be null or empty. Note
+     * that the name cannot exceed 100 characters in length.
      * @param officeName the name of the office
      * @return a new instance of {@link Builder}
      */

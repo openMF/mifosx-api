@@ -48,7 +48,7 @@ public class RestStaffService implements StaffService {
 
         this.connectionProperties = properties;
         this.restAdapter = adapter;
-        this.authenticationKey = authKey;
+        this.authenticationKey = "Basic " + authKey;
         this.allowedStatuses = Arrays.asList("active", "inactive", "all");
     }
 
@@ -73,7 +73,7 @@ public class RestStaffService implements StaffService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 403) {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);
@@ -100,7 +100,7 @@ public class RestStaffService implements StaffService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                     error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else {
                 throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
@@ -128,7 +128,7 @@ public class RestStaffService implements StaffService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                     error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 403) {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);
@@ -166,7 +166,7 @@ public class RestStaffService implements StaffService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                     error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 403) {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);
@@ -202,7 +202,7 @@ public class RestStaffService implements StaffService {
                 throw new MifosXResourceException(ErrorCode.STAFF_NOT_FOUND);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                     error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 403) {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);

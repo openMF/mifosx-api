@@ -60,12 +60,15 @@ public class RestOfficeServiceTest {
         this.defaultOffice = Office
                 .name("Head Office")
                 .openingDate("10 December 2014")
-                .parentId((long)1)
+                .locale("en")
+                .dateFormat("dd MMMM yyyy")
+                .parentId((long) 1)
                 .build();
         this.defaultOfficeId = (long)1;
         this.officeService = new RestOfficeService(this.properties, this.restAdapter,
                 this.mockedAuthKey);
-        this.defaultDuplicateJSON = "{\"defaultUserMessage\": \"some random message\"}";
+        this.mockedAuthKey = "Basic " + this.mockedAuthKey;
+        this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
         this.defaultDuplicateMessage = "some random message";
 
         when(this.restAdapter.create(RetrofitOfficeService.class)).thenReturn(this.retrofitOfficeService);
@@ -157,14 +160,14 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for createOffice().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for createOffice().
      */
     @Test
     public void testCreateOfficeInvalidAuthKeyException() {
@@ -181,7 +184,7 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -268,12 +271,12 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         }
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for fetchOffices().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for fetchOffices().
      */
     @Test
     public void testFetchOfficesInvalidAuthKeyException() {
@@ -290,7 +293,7 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         }
     }
 
@@ -344,8 +347,8 @@ public class RestOfficeServiceTest {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -368,8 +371,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -391,8 +394,8 @@ public class RestOfficeServiceTest {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -400,7 +403,7 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
@@ -415,8 +418,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -431,7 +434,7 @@ public class RestOfficeServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for findOffice().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for findOffice().
      */
     @Test
     public void testFindOfficeInvalidAuthKeyException() {
@@ -439,8 +442,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -448,7 +451,7 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch(MifosXResourceException e) {
             Assert.fail();
         }
@@ -463,8 +466,8 @@ public class RestOfficeServiceTest {
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultOfficeId)).thenThrow(error);
+        when(this.retrofitOfficeService.findOffice(this.mockedAuthKey,
+                this.properties.getTenant(), this.defaultOfficeId)).thenThrow(error);
 
         try {
             this.officeService.findOffice(this.defaultOfficeId);
@@ -526,7 +529,7 @@ public class RestOfficeServiceTest {
     }
 
     /**
-     * Test for {@link ErrorCode#INVALID_BASIC_AUTHENTICATION} exception for updateOffice().
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for updateOffice().
      */
     @Test
     public void testUpdateOfficeInvalidAuthKeyException() {
@@ -543,7 +546,7 @@ public class RestOfficeServiceTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
         } catch (MifosXResourceException e) {
             Assert.fail();
         }
