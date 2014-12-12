@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.mifos.sdk;
+package org.mifos.sdk.staff.internal;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
@@ -13,10 +13,11 @@ import static org.mockito.Mockito.doThrow;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mifos.sdk.MifosXConnectException;
+import org.mifos.sdk.MifosXProperties;
+import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.internal.ErrorCode;
-import org.mifos.sdk.internal.RetrofitStaffService;
 import org.mifos.sdk.staff.domain.Staff;
-import org.mifos.sdk.staff.internal.RestStaffService;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
