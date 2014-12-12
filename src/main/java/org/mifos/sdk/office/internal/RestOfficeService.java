@@ -10,7 +10,6 @@ import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.internal.ErrorCode;
-import org.mifos.sdk.internal.RetrofitOfficeService;
 import org.mifos.sdk.internal.ServerResponseUtil;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.office.domain.Office;

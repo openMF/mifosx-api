@@ -16,14 +16,14 @@ public enum ErrorCode {
 
     // for MifosXConnectException
     NOT_CONNECTED(100, "Could not establish a connection!"),
-    UNAUTHENTICATED(101, "Invalid authentication details were passed in the API request."),
-    INVALID_BASIC_AUTHENTICATION(102, "Invalid basic authentication token was passed."),
+    NOT_LOGGED_IN(101, "Not logged in. A valid authentication key is required to carry on API requests."),
+    UNAUTHENTICATED(102, "Invalid authentication details were passed in the API request."),
+    INVALID_BASIC_AUTHENTICATION(103, "Invalid basic authentication token was passed."),
 
     // for MifosXResourceException
     OFFICE_NOT_FOUND(200, "Office not found."),
     STAFF_NOT_FOUND(201, "Staff not found."),
     INVALID_STATUS(202, "Invalid staff status passed. Should only be active, inactive or all."),
-    DUPLICATE_EXTERNALID(203, "Duplicate external ID passed. Please use a unique external ID."),
     ;
 
     private int code;

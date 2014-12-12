@@ -5,6 +5,9 @@
  */
 package org.mifos.sdk;
 
+import org.mifos.sdk.office.OfficeService;
+import org.mifos.sdk.staff.StaffService;
+
 /**
  * Principle client interface for the base authentication workflow
  */
@@ -22,5 +25,17 @@ public interface MifosXClient {
      * you must call {@link #login()} to obtain a new authentication key.
      */
     void logout();
+
+    /**
+     * Returns an instance of {@link OfficeService} to use the Office API.
+     * @throws MifosXConnectException
+     */
+    OfficeService officeService() throws MifosXConnectException;
+
+    /**
+     * Returns an instance of {@link StaffService} to use the Staff API.
+     * @throws MifosXConnectException
+     */
+    StaffService staffService() throws MifosXConnectException;
 
 }

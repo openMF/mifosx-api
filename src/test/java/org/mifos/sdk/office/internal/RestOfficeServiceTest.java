@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.mifos.sdk;
+package org.mifos.sdk.office.internal;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.mock;
@@ -13,10 +13,11 @@ import static org.mockito.Mockito.doThrow;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mifos.sdk.MifosXConnectException;
+import org.mifos.sdk.MifosXProperties;
+import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.internal.ErrorCode;
-import org.mifos.sdk.internal.RetrofitOfficeService;
 import org.mifos.sdk.office.domain.Office;
-import org.mifos.sdk.office.internal.RestOfficeService;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
@@ -214,7 +215,7 @@ public class RestOfficeServiceTest {
      */
     @Test
     public void testFetchOffices() {
-        final List officesList = Arrays.asList(this.defaultOffice, this.defaultOffice);
+        final List<Office> officesList = Arrays.asList(this.defaultOffice, this.defaultOffice);
 
         when(this.retrofitOfficeService.fetchOffices(this.mockedAuthKey,
                 this.properties.getTenant())).thenReturn(officesList);

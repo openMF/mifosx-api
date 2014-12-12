@@ -6,6 +6,10 @@
 package org.mifos.sdk.internal;
 
 import org.mifos.sdk.MifosXConnectException;
+import org.mifos.sdk.office.OfficeService;
+import org.mifos.sdk.office.internal.RestOfficeService;
+import org.mifos.sdk.staff.StaffService;
+import org.mifos.sdk.staff.internal.RestStaffService;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 
@@ -20,6 +24,8 @@ public class RestMifosXClient implements MifosXClient {
 
     private final MifosXProperties connectionProperties;
     private final RestAdapter restAdapter;
+    private OfficeService officeService;
+    private StaffService staffService;
     private String authenticationKey;
     private boolean loggedIn;
 
@@ -68,20 +74,58 @@ public class RestMifosXClient implements MifosXClient {
     }
 
     /**
+     * Overridden method to delete the authentication key.
+     */
+    @Override
+    public void logout() {
+        this.officeService = null;
+        this.staffService = null;
+        this.authenticationKey = null;
+        this.loggedIn = false;
+    }
+
+    /**
+     * Returns the instance of {@link OfficeService} to use the Office API.
+     * @throws MifosXConnectException
+     */
+    @Override
+    public OfficeService officeService() throws MifosXConnectException {
+        if (!loggedIn) {
+            throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
+        }
+
+        if (this.officeService == null) {
+            this.officeService = new RestOfficeService(this.connectionProperties,
+                    this.restAdapter, this.authenticationKey);
+        }
+
+        return this.officeService;
+    }
+
+    /**
+     * Returns the instance of {@link StaffService} to use the Staff API.
+     * @throws MifosXConnectException
+     */
+    @Override
+    public StaffService staffService() throws MifosXConnectException {
+        if (!loggedIn) {
+            throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
+        }
+
+        if (this.staffService == null) {
+            this.staffService = new RestStaffService(this.connectionProperties,
+                    this.restAdapter, this.authenticationKey);
+        }
+
+        return this.staffService;
+    }
+
+    /**
      * Returns the authentication key.
      * @return the authentication key obtained by calling {@link #login()}
      */
     String getAuthenticationKey() {
         return this.authenticationKey;
-    }
-
-    /**
-     * Overridden method to delete the authentication key.
-     */
-    @Override
-    public void logout() {
-        this.authenticationKey = null;
-        this.loggedIn = false;
     }
 
     /** Returns whether the client is logged in. */

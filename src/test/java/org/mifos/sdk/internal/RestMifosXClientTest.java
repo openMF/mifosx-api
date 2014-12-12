@@ -13,10 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
-import org.mifos.sdk.internal.AuthenticationToken;
-import org.mifos.sdk.internal.ErrorCode;
-import org.mifos.sdk.internal.RestMifosXClient;
-import org.mifos.sdk.internal.RetrofitMifosService;
+import org.mifos.sdk.office.OfficeService;
+import org.mifos.sdk.staff.StaffService;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Header;
@@ -71,6 +69,90 @@ public class RestMifosXClientTest {
             this.mifosXClient.logout();
         } catch (MifosXConnectException e) {
             Assert.fail();
+        }
+    }
+
+    /**
+     * Test for the office service.
+     */
+    @Test
+    public void testOfficeService() {
+        when(this.restAdapter.create(RetrofitMifosService.class)).thenReturn(this.retrofitMifosService);
+        when(this.retrofitMifosService.authenticate(this.properties.getUsername(),
+                this.properties.getPassword(), this.properties.getTenant())).thenReturn(this.mockedAuthKey);
+
+        try {
+            this.mifosXClient.login();
+            OfficeService officeService = this.mifosXClient.officeService();
+
+            Assert.assertNotNull(officeService);
+
+            this.mifosXClient.logout();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for the office service exception.
+     */
+    @Test
+    public void testOfficeServiceException() {
+        when(this.restAdapter.create(RetrofitMifosService.class)).thenReturn(this.retrofitMifosService);
+        when(this.retrofitMifosService.authenticate(this.properties.getUsername(),
+                this.properties.getPassword(), this.properties.getTenant())).thenReturn(this.mockedAuthKey);
+
+        try {
+            this.mifosXClient.login();
+            this.mifosXClient.logout();
+            this.mifosXClient.officeService();
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_LOGGED_IN.getMessage());
+        }
+    }
+
+    /**
+     * Test for the staff service.
+     */
+    @Test
+    public void testStaffService() {
+        when(this.restAdapter.create(RetrofitMifosService.class)).thenReturn(this.retrofitMifosService);
+        when(this.retrofitMifosService.authenticate(this.properties.getUsername(),
+                this.properties.getPassword(), this.properties.getTenant())).thenReturn(this.mockedAuthKey);
+
+        try {
+            this.mifosXClient.login();
+            StaffService staffService = this.mifosXClient.staffService();
+
+            Assert.assertNotNull(staffService);
+
+            this.mifosXClient.logout();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for the staff service exception.
+     */
+    @Test
+    public void testStaffServiceException() {
+        when(this.restAdapter.create(RetrofitMifosService.class)).thenReturn(this.retrofitMifosService);
+        when(this.retrofitMifosService.authenticate(this.properties.getUsername(),
+                this.properties.getPassword(), this.properties.getTenant())).thenReturn(this.mockedAuthKey);
+
+        try {
+            this.mifosXClient.login();
+            this.mifosXClient.logout();
+            this.mifosXClient.staffService();
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_LOGGED_IN.getMessage());
         }
     }
 
