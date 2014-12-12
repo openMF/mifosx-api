@@ -5,6 +5,8 @@
  */
 package org.mifos.sdk.office.domain;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Gives an interface to communicate with the Office API.
  */
@@ -64,9 +66,9 @@ public class Office {
          * @return instance of the current {@link Builder}
          */
         public Builder openingDate(final String date) {
-            if (date == null || date.isEmpty()) {
-                throw new IllegalArgumentException("opening date cannot be null or empty");
-            }
+            Preconditions.checkNotNull(date);
+            Preconditions.checkArgument(!date.isEmpty());
+
             this.openingDate = date;
             return this;
         }
@@ -77,9 +79,8 @@ public class Office {
          * @return instance of the current {@link Builder}
          */
         public Builder parentId(final Long id) {
-            if (id == null) {
-                throw new IllegalArgumentException("parent ID cannot be null");
-            }
+            Preconditions.checkNotNull(id);
+
             this.parentId = id;
             return this;
         }
@@ -91,9 +92,8 @@ public class Office {
          * @return instance of the current {@link Builder}
          */
         public Builder externalId(final String id) {
-            if (id.length() > 100) {
-                throw new IllegalArgumentException("external id cannot be greater than 100 characters");
-            }
+            Preconditions.checkArgument(id.length() <= 100);
+
             this.externalId = id;
             return this;
         }
@@ -104,6 +104,10 @@ public class Office {
          * @return a new instance of {@link Office}
          */
         public Office build() {
+            Preconditions.checkNotNull(this.name);
+            Preconditions.checkNotNull(this.parentId);
+            Preconditions.checkNotNull(this.openingDate);
+
             return new Office(this.name, this.nameDecorated, this.dateFormat,
                               this.locale, this.openingDate, this.parentId, this.externalId);
         }
@@ -201,11 +205,10 @@ public class Office {
      * @return a new instance of {@link Builder}
      */
     public static Builder name(final String officeName) {
-        if (officeName.length() > 100) {
-            throw new IllegalArgumentException("name cannot be greater than 100 characters");
-        } else if (officeName == null || officeName.isEmpty()) {
-            throw new IllegalArgumentException("name cannot be null or empty");
-        }
+        Preconditions.checkNotNull(officeName);
+        Preconditions.checkArgument(officeName.length() <= 100);
+        Preconditions.checkArgument(!officeName.isEmpty());
+
         return new Builder(officeName);
     }
 

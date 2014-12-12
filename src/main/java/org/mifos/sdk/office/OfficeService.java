@@ -6,6 +6,7 @@
 package org.mifos.sdk.office;
 
 import org.mifos.sdk.MifosXConnectException;
+import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.office.domain.Office;
 
 import java.util.List;
@@ -20,8 +21,9 @@ public interface OfficeService {
      * @param office the {@link Office} object to create
      * @return the office ID
      * @throws MifosXConnectException
+     * @throws MifosXResourceException
      */
-    Long createOffice(Office office) throws MifosXConnectException;
+    Long createOffice(Office office) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves the list of all available offices.
@@ -35,14 +37,16 @@ public interface OfficeService {
      * @param id the office ID to look for
      * @return the office for the given ID
      * @throws MifosXConnectException
+     * @throws MifosXResourceException
      */
-    Office findOffice(Long id) throws MifosXConnectException;
+    Office findOffice(Long id) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Updates a particular office.
      * @param office the {@link Office} object to update
      * @throws MifosXConnectException
+     * @throws MifosXResourceException
      */
-    void updateOffice(Long id, Office office) throws MifosXConnectException;
+    void updateOffice(Long id, Office office) throws MifosXConnectException, MifosXResourceException;
 
 }

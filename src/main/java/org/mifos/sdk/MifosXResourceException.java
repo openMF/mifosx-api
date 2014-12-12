@@ -5,6 +5,7 @@
  */
 package org.mifos.sdk;
 
+import com.google.common.base.Preconditions;
 import org.mifos.sdk.internal.ErrorCode;
 
 /**
@@ -13,6 +14,7 @@ import org.mifos.sdk.internal.ErrorCode;
 public class MifosXResourceException extends Exception {
 
     private ErrorCode errorCode;
+    private String errorMessage;
 
     /**
      * Constructs a new instance of {@link MifosXResourceException}.
@@ -20,7 +22,18 @@ public class MifosXResourceException extends Exception {
      */
     public MifosXResourceException(final ErrorCode code) {
         super(code.getMessage());
+        Preconditions.checkNotNull(code);
         this.errorCode = code;
+    }
+
+    /**
+     * Constructs a new instance of {@link MifosXResourceException}.
+     * @param message the message to throw
+     */
+    public MifosXResourceException(final String message) {
+        super(message);
+        Preconditions.checkNotNull(message);
+        this.errorMessage = message;
     }
 
     /**
@@ -28,6 +41,13 @@ public class MifosXResourceException extends Exception {
      */
     public ErrorCode getErrorCode() {
         return this.errorCode;
+    }
+
+    public String getMessage() {
+        if (this.errorCode != null) {
+            return this.errorCode.getMessage();
+        }
+        return this.errorMessage;
     }
 
     /**

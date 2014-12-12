@@ -5,10 +5,13 @@
  */
 package org.mifos.sdk.office.internal;
 
+import com.google.common.base.Preconditions;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
+import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.internal.ErrorCode;
 import org.mifos.sdk.internal.RetrofitOfficeService;
+import org.mifos.sdk.internal.ServerResponseUtil;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.office.domain.Office;
 import retrofit.RestAdapter;
@@ -23,19 +26,25 @@ import java.util.List;
 public class RestOfficeService implements OfficeService {
 
     private final MifosXProperties connectionProperties;
-    private final String authenticationKey;
     private final RestAdapter restAdapter;
+    private final String authenticationKey;
 
     /**
      * Constructs a new instance of {@link RestOfficeService} with the
-     * provided properties and authKey.
+     * provided properties, adapter and authKey.
      * @param properties the {@link MifosXProperties} with the API URL endpoint
+     * @param adapter the rest adapter used for creating Retrofit services
      * @param authKey the authentication key obtain by calling {@link org.mifos.sdk.MifosXClient#login()}
      */
     public RestOfficeService(final MifosXProperties properties,
                              final RestAdapter adapter,
                              final String authKey) {
         super();
+
+        Preconditions.checkNotNull(properties);
+        Preconditions.checkNotNull(adapter);
+        Preconditions.checkNotNull(authKey);
+
         this.connectionProperties = properties;
         this.authenticationKey = authKey;
         this.restAdapter = adapter;
@@ -43,17 +52,20 @@ public class RestOfficeService implements OfficeService {
 
     /**
      * Creates a new office with the details provided by office.
-     * @param office the {@link Office} object to create
+     * @param office the {@link Office} to create
      * @return the server-returned office ID on successful operation
      * @throws MifosXConnectException
+     * @throws MifosXResourceException
      */
     @Override
-    public Long createOffice(final Office office) throws MifosXConnectException {
+    public Long createOffice(final Office office) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(office);
         final RetrofitOfficeService officeService = this.restAdapter.create(RetrofitOfficeService.class);
         Long officeId = null;
         try {
-            final Office createdOffice = officeService.createOffice(this.authenticationKey, this.connectionProperties.getTenant(),
-                    office);
+            final Office createdOffice = officeService.createOffice(this.authenticationKey,
+                    this.connectionProperties.getTenant(), office);
             officeId = createdOffice.getOfficeId();
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
@@ -61,6 +73,9 @@ public class RestOfficeService implements OfficeService {
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
                 throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
             } else {
                 throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
@@ -97,9 +112,12 @@ public class RestOfficeService implements OfficeService {
      * @param id the office ID to look for
      * @return the {@link Office} object that was searched for
      * @throws MifosXConnectException
+     * @throws MifosXResourceException
      */
     @Override
-    public Office findOffice(final Long id) throws MifosXConnectException {
+    public Office findOffice(final Long id) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
         final RetrofitOfficeService officeService = this.restAdapter.create(RetrofitOfficeService.class);
         Office office = null;
         try {
@@ -110,6 +128,11 @@ public class RestOfficeService implements OfficeService {
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
                 throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.OFFICE_NOT_FOUND);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
             } else {
                 throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
@@ -124,7 +147,10 @@ public class RestOfficeService implements OfficeService {
      * @throws MifosXConnectException
      */
     @Override
-    public void updateOffice(final Long id, final Office office) throws MifosXConnectException {
+    public void updateOffice(final Long id, final Office office) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(office);
         final RetrofitOfficeService officeService = this.restAdapter.create(RetrofitOfficeService.class);
         try {
             officeService.updateOffice(this.authenticationKey, this.connectionProperties.getTenant(),
@@ -132,12 +158,15 @@ public class RestOfficeService implements OfficeService {
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.OFFICE_NOT_FOUND);
             } else {
-                if (error.getResponse().getStatus() == 401) {
-                    throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
-                } else {
-                    throw new MifosXConnectException(ErrorCode.UNKNOWN);
-                }
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
         }
     }

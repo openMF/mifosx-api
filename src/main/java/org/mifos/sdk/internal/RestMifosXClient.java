@@ -59,7 +59,7 @@ public class RestMifosXClient implements MifosXClient {
                            error.getResponse().getStatus() == 401) {
                     this.loggedIn = false;
                     this.authenticationKey = null;
-                    throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                    throw new MifosXConnectException(ErrorCode.UNAUTHENTICATED);
                 } else {
                     throw new MifosXConnectException(ErrorCode.UNKNOWN);
                 }

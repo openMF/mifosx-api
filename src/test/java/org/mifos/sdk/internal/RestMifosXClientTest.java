@@ -140,7 +140,7 @@ public class RestMifosXClientTest {
             Assert.fail();
         } catch (MifosXConnectException e) {
             Assert.assertNotNull(e);
-            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_BASIC_AUTHENTICATION.getMessage());
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNAUTHENTICATED.getMessage());
         }
     }
 
