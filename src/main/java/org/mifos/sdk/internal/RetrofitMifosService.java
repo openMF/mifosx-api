@@ -24,6 +24,6 @@ public interface RetrofitMifosService {
     @POST("/authentication")
     public AuthenticationToken authenticate(@Query("username") String username,
                                             @Query("password") String password,
-                                            @Header("X-Mifos-Platform-TenantId") String tenantId);
+                                            @Header(RestConstants.HEADER_TENANTID) String tenantId);
 
 }

@@ -27,7 +27,7 @@ public class ServerResponseUtil {
             final InputStream stream = response.getBody().in();
             final InputStreamReader streamReader = new InputStreamReader(stream);
             final JsonObject responseJSON = new Gson().fromJson(streamReader, JsonObject.class);
-            final JsonElement message = responseJSON.get("defaultUserMessage");
+            final JsonElement message = responseJSON.get("developerMessage");
             return message.getAsString();
         } catch(IOException e) {
             throw new IllegalStateException(e.getMessage());

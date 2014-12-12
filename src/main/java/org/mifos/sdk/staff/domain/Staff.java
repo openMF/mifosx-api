@@ -8,6 +8,12 @@ package org.mifos.sdk.staff.domain;
 import com.google.common.base.Preconditions;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import org.joda.time.LocalDate;
+import org.mifos.sdk.internal.DateParser;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 public class Staff {
 
@@ -139,13 +145,20 @@ public class Staff {
         }
 
         /**
-         * Constructs a new Staff instance
+         * Constructs a new Staff instance. Throws IllegalArgumentException if the
+         * date, date format and/or the locale is/are invalid.
          * with the provided parameters.
          * @return a new instance of {@link Staff}
          */
         public Staff build() {
             Preconditions.checkNotNull(this.firstName);
             Preconditions.checkNotNull(this.lastName);
+            if (this.joiningDate != null) {
+                Preconditions.checkNotNull(this.dateFormat);
+                Preconditions.checkNotNull(this.locale);
+
+                DateParser.checkForValidDate(this.joiningDate, this.dateFormat, this.locale);
+            }
 
             return new Staff(this.officeId, this.firstName, this.lastName, this.isLoanOfficer,
                     this.externalId, this.mobileNo, this.isActive, this.locale, this.dateFormat,
@@ -156,15 +169,15 @@ public class Staff {
 
     private Long officeId;
     private Long resourceId;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String isLoanOfficer;
     private String externalId;
     private String mobileNo;
     private String isActive;
     private String locale;
     private String dateFormat;
-    private String joiningDate;
+    private List<String> joiningDate;
 
     private Staff(final Long staffOfficeId,
                   final String staffFirstName,
@@ -177,15 +190,15 @@ public class Staff {
                   final String staffDateFormat,
                   final String staffJoiningDate) {
         this.officeId = staffOfficeId;
-        this.firstName = staffFirstName;
-        this.lastName = staffLastName;
+        this.firstname = staffFirstName;
+        this.lastname = staffLastName;
         this.isLoanOfficer = isStaffLoanOfficer;
         this.externalId = staffExternalId;
         this.mobileNo = staffMobileNo;
         this.isActive = isStaffActive;
         this.locale = staffLocale;
         this.dateFormat = staffDateFormat;
-        this.joiningDate = staffJoiningDate;
+        this.joiningDate = Arrays.asList(staffJoiningDate);
     }
 
     /**
@@ -206,14 +219,14 @@ public class Staff {
      * Returns the first name of the staff.
      */
     public String getFirstName() {
-        return this.firstName;
+        return this.firstname;
     }
 
     /**
      * Returns the last name of the staff.
      */
     public String getLastName() {
-        return this.lastName;
+        return this.lastname;
     }
 
     /**
@@ -262,7 +275,12 @@ public class Staff {
      * Returns the joining date of the staff.
      */
     public String getJoiningDate() {
-        return this.joiningDate;
+        if (this.joiningDate.size() == 1) {
+            return this.joiningDate.get(0);
+        } else {
+            final LocalDate localDate = DateParser.parseFromList(this.joiningDate);
+            return localDate.toString(this.dateFormat, new Locale(this.locale));
+        }
     }
 
     /**

@@ -18,7 +18,7 @@ public enum ErrorCode {
     NOT_CONNECTED(100, "Could not establish a connection!"),
     NOT_LOGGED_IN(101, "Not logged in. A valid authentication key is required to carry on API requests."),
     UNAUTHENTICATED(102, "Invalid authentication details were passed in the API request."),
-    INVALID_BASIC_AUTHENTICATION(103, "Invalid basic authentication token was passed."),
+    INVALID_AUTHENTICATION_TOKEN(103, "Invalid authentication token was passed."),
 
     // for MifosXResourceException
     OFFICE_NOT_FOUND(200, "Office not found."),

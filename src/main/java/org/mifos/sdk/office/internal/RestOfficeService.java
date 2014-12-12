@@ -45,7 +45,7 @@ public class RestOfficeService implements OfficeService {
         Preconditions.checkNotNull(authKey);
 
         this.connectionProperties = properties;
-        this.authenticationKey = authKey;
+        this.authenticationKey = "Basic " + authKey;
         this.restAdapter = adapter;
     }
 
@@ -71,7 +71,7 @@ public class RestOfficeService implements OfficeService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 403) {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);
@@ -92,13 +92,14 @@ public class RestOfficeService implements OfficeService {
         final RetrofitOfficeService officeService = this.restAdapter.create(RetrofitOfficeService.class);
         List<Office> offices = null;
         try {
-            offices = officeService.fetchOffices(this.authenticationKey, this.connectionProperties.getTenant());
+            offices = officeService.fetchOffices(this.authenticationKey,
+                    this.connectionProperties.getTenant());
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else {
                 throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
@@ -126,7 +127,7 @@ public class RestOfficeService implements OfficeService {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
             } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
                        error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 404) {
                 throw new MifosXResourceException(ErrorCode.OFFICE_NOT_FOUND);
             } else if (error.getResponse().getStatus() == 403) {
@@ -152,8 +153,8 @@ public class RestOfficeService implements OfficeService {
         Preconditions.checkNotNull(office);
         final RetrofitOfficeService officeService = this.restAdapter.create(RetrofitOfficeService.class);
         try {
-            officeService.updateOffice(this.authenticationKey, this.connectionProperties.getTenant(),
-                    id, office);
+            officeService.updateOffice(this.authenticationKey,
+                    this.connectionProperties.getTenant(), id, office);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -161,7 +162,7 @@ public class RestOfficeService implements OfficeService {
                 final String message = ServerResponseUtil.parseResponse(error.getResponse());
                 throw new MifosXResourceException(message);
             } else if (error.getResponse().getStatus() == 401) {
-                throw new MifosXConnectException(ErrorCode.INVALID_BASIC_AUTHENTICATION);
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
             } else if (error.getResponse().getStatus() == 404) {
                 throw new MifosXResourceException(ErrorCode.OFFICE_NOT_FOUND);
             } else {

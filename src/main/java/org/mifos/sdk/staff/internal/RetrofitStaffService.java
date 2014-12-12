@@ -5,8 +5,15 @@
  */
 package org.mifos.sdk.staff.internal;
 
+import org.mifos.sdk.internal.RestConstants;
 import org.mifos.sdk.staff.domain.Staff;
-import retrofit.http.*;
+import retrofit.http.Body;
+import retrofit.http.GET;
+import retrofit.http.Header;
+import retrofit.http.POST;
+import retrofit.http.PUT;
+import retrofit.http.Path;
+import retrofit.http.Query;
 
 import java.util.List;
 
@@ -24,8 +31,8 @@ public interface RetrofitStaffService {
      * @return a {@link Staff} with the office ID and the resource ID
      */
     @POST("/staff")
-    public Staff createStaff(@Header("Authorization: Basic") String authenticationKey,
-                             @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public Staff createStaff(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                             @Header(RestConstants.HEADER_TENANTID) String tenantId,
                              @Body Staff staff);
 
     /**
@@ -36,8 +43,8 @@ public interface RetrofitStaffService {
      * @return a list of all the available {@link Staff}
      */
     @GET("/staff")
-    public List<Staff> fetchStaff(@Header("Authorization: Basic") String authenticationKey,
-                                  @Header("X-Mifos-Platform-TenantId") String tenantId);
+    public List<Staff> fetchStaff(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                  @Header(RestConstants.HEADER_TENANTID) String tenantId);
 
     /**
      * Retrieves one particular staff.
@@ -48,8 +55,8 @@ public interface RetrofitStaffService {
      * @return a {@link Staff} with the details of the searched staff
      */
     @GET("/staff/{id}")
-    public Staff findStaff(@Header("Authorization: Basic") String authenticationKey,
-                           @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public Staff findStaff(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                           @Header(RestConstants.HEADER_TENANTID) String tenantId,
                            @Path("id") Long id);
 
     /**
@@ -61,8 +68,8 @@ public interface RetrofitStaffService {
      * @return a list of all the {@link Staff} with their status
      */
     @GET("/staff")
-    public List<Staff> findStaffByStatus(@Header("Authorization: Basic") String authenticationKey,
-                                         @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public List<Staff> findStaffByStatus(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                         @Header(RestConstants.HEADER_TENANTID) String tenantId,
                                          @Query("status") String status);
 
     /**
@@ -74,8 +81,8 @@ public interface RetrofitStaffService {
      * @param newStaff a {@link Staff} object with the changes to be made
      */
     @PUT("/staff/{id}")
-    public void updateStaff(@Header("Authorization: Basic") String authenticationKey,
-                            @Header("X-Mifos-Platform-TenantId") String tenantId,
+    public void updateStaff(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                            @Header(RestConstants.HEADER_TENANTID) String tenantId,
                             @Path("id") Long id,
                             @Body Staff newStaff);
 
