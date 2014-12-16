@@ -56,9 +56,15 @@ public class MifosXResourceException extends Exception {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.errorCode.getCode());
-        stringBuilder.append(": ");
-        stringBuilder.append(this.errorCode.getMessage());
+        stringBuilder.append(getClass().getCanonicalName());
+        stringBuilder.append(System.getProperty("line.separator"));
+        if (this.errorCode != null) {
+            stringBuilder.append(this.errorCode.getCode());
+            stringBuilder.append(": ");
+            stringBuilder.append(this.errorCode.getMessage());
+        } else {
+            stringBuilder.append(this.errorMessage);
+        }
         return stringBuilder.toString();
     }
 

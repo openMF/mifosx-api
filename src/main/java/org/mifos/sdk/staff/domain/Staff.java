@@ -6,14 +6,8 @@
 package org.mifos.sdk.staff.domain;
 
 import com.google.common.base.Preconditions;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import org.joda.time.LocalDate;
-import org.mifos.sdk.internal.DateParser;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.Date;
 
 public class Staff {
 
@@ -24,15 +18,15 @@ public class Staff {
     public static class Builder {
 
         private Long officeId;
-        private String firstName;
-        private String lastName;
-        private String isLoanOfficer;
+        private String firstname;
+        private String lastname;
+        private boolean isLoanOfficer;
         private String externalId;
         private String mobileNo;
-        private String isActive;
+        private boolean isActive;
         private String locale;
         private String dateFormat;
-        private String joiningDate;
+        private Date joiningDate;
 
         private Builder(final Long id) {
             this.officeId = id;
@@ -43,11 +37,8 @@ public class Staff {
          * @param name the first name of the staff
          * @return instance of the current {@link Builder}
          */
-        public Builder firstName(final String name) {
-            Preconditions.checkNotNull(name);
-            Preconditions.checkArgument(!name.isEmpty());
-
-            this.firstName = name;
+        public Builder firstname(final String name) {
+            this.firstname = name;
             return this;
         }
 
@@ -56,21 +47,18 @@ public class Staff {
          * @param name the last name of the staff
          * @return instance of the current {@link Builder}
          */
-        public Builder lastName(final String name) {
-            Preconditions.checkNotNull(name);
-            Preconditions.checkArgument(!name.isEmpty());
-
-            this.lastName = name;
+        public Builder lastname(final String name) {
+            this.lastname = name;
             return this;
         }
 
         /**
          * Optional method to set whether the staff is a loan officer.
-         * @param bool "true" or "false" depending on whether the staff is a loan officer
+         * @param loanOfficer true or false depending on whether the staff is a loan officer
          * @return instance of the current {@link Builder}
          */
-        public Builder isLoanOfficer(final String bool) {
-            this.isLoanOfficer = bool;
+        public Builder isLoanOfficer(final boolean loanOfficer) {
+            this.isLoanOfficer = loanOfficer;
             return this;
         }
 
@@ -81,36 +69,28 @@ public class Staff {
          * @return instance of the current {@link Builder}
          */
         public Builder externalId(final String id) {
-            Preconditions.checkArgument(id.length() <= 100);
-
             this.externalId = id;
             return this;
         }
 
         /**
-         * Optional method to set the mobile number of the staff.
+         * Optional method to set the mobile number of the staff. Throws
+         * IllegalArgumentException if the mobile number is invalid.
          * @param number the mobile number of the staff
          * @return instance of the current {@link Builder}
          */
         public Builder mobileNo(final String number) {
-            final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-            try {
-                phoneNumberUtil.parse(number, "");
-            } catch (NumberParseException e) {
-                throw new IllegalArgumentException("invalid mobile number provided");
-            }
-
             this.mobileNo = number;
             return this;
         }
 
         /**
          * Optional method to set whether the staff is active.
-         * @param bool "true" or "false" depending on whether the staff is active
+         * @param active true or false depending on whether the staff is active
          * @return instance of the current {@link Builder}
          */
-        public Builder isActive(final String bool) {
-            this.isActive = bool;
+        public Builder isActive(final boolean active) {
+            this.isActive = active;
             return this;
         }
 
@@ -120,6 +100,9 @@ public class Staff {
          * @return instance of the current {@link Builder}
          */
         public Builder locale(final String lang) {
+            Preconditions.checkNotNull(lang);
+            Preconditions.checkArgument(!lang.isEmpty());
+
             this.locale = lang;
             return this;
         }
@@ -130,6 +113,9 @@ public class Staff {
          * @return instance of the current {@link Builder}
          */
         public Builder dateFormat(final String format) {
+            Preconditions.checkNotNull(format);
+            Preconditions.checkArgument(!format.isEmpty());
+
             this.dateFormat = format;
             return this;
         }
@@ -139,28 +125,17 @@ public class Staff {
          * @param date the joining date of the staff
          * @return instance of the current {@link Builder}
          */
-        public Builder joiningDate(final String date) {
+        public Builder joiningDate(final Date date) {
             this.joiningDate = date;
             return this;
         }
 
         /**
-         * Constructs a new Staff instance. Throws IllegalArgumentException if the
-         * date, date format and/or the locale is/are invalid.
-         * with the provided parameters.
+         * Constructs a new Staff instance with the provided parameters.
          * @return a new instance of {@link Staff}
          */
         public Staff build() {
-            Preconditions.checkNotNull(this.firstName);
-            Preconditions.checkNotNull(this.lastName);
-            if (this.joiningDate != null) {
-                Preconditions.checkNotNull(this.dateFormat);
-                Preconditions.checkNotNull(this.locale);
-
-                DateParser.checkForValidDate(this.joiningDate, this.dateFormat, this.locale);
-            }
-
-            return new Staff(this.officeId, this.firstName, this.lastName, this.isLoanOfficer,
+            return new Staff(this.officeId, this.firstname, this.lastname, this.isLoanOfficer,
                     this.externalId, this.mobileNo, this.isActive, this.locale, this.dateFormat,
                     this.joiningDate);
         }
@@ -171,24 +146,26 @@ public class Staff {
     private Long resourceId;
     private String firstname;
     private String lastname;
-    private String isLoanOfficer;
+    private boolean isLoanOfficer;
     private String externalId;
     private String mobileNo;
-    private String isActive;
+    private boolean isActive;
     private String locale;
     private String dateFormat;
-    private List<String> joiningDate;
+    private Date joiningDate;
+    private String displayName;
+    private String officeName;
 
     private Staff(final Long staffOfficeId,
                   final String staffFirstName,
                   final String staffLastName,
-                  final String isStaffLoanOfficer,
+                  final boolean isStaffLoanOfficer,
                   final String staffExternalId,
                   final String staffMobileNo,
-                  final String isStaffActive,
+                  final boolean isStaffActive,
                   final String staffLocale,
                   final String staffDateFormat,
-                  final String staffJoiningDate) {
+                  final Date staffJoiningDate) {
         this.officeId = staffOfficeId;
         this.firstname = staffFirstName;
         this.lastname = staffLastName;
@@ -198,7 +175,7 @@ public class Staff {
         this.isActive = isStaffActive;
         this.locale = staffLocale;
         this.dateFormat = staffDateFormat;
-        this.joiningDate = Arrays.asList(staffJoiningDate);
+        this.joiningDate = staffJoiningDate;
     }
 
     /**
@@ -218,21 +195,21 @@ public class Staff {
     /**
      * Returns the first name of the staff.
      */
-    public String getFirstName() {
+    public String getFirstname() {
         return this.firstname;
     }
 
     /**
      * Returns the last name of the staff.
      */
-    public String getLastName() {
+    public String getLastname() {
         return this.lastname;
     }
 
     /**
      * Returns whether the staff is a loan officer.
      */
-    public String getIsLoanOfficer() {
+    public boolean getIsLoanOfficer() {
         return this.isLoanOfficer;
     }
 
@@ -253,7 +230,7 @@ public class Staff {
     /**
      * Returns whether the staff is active.
      */
-    public String getIsActive() {
+    public boolean getIsActive() {
         return this.isActive;
     }
 
@@ -274,13 +251,46 @@ public class Staff {
     /**
      * Returns the joining date of the staff.
      */
-    public String getJoiningDate() {
-        if (this.joiningDate.size() == 1) {
-            return this.joiningDate.get(0);
-        } else {
-            final LocalDate localDate = DateParser.parseFromList(this.joiningDate);
-            return localDate.toString(this.dateFormat, new Locale(this.locale));
-        }
+    public Date getJoiningDate() {
+        return this.joiningDate;
+    }
+
+    /**
+     * Returns the display name.
+     */
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    /**
+     * Returns the office name.
+     */
+    public String getOfficeName() {
+        return this.officeName;
+    }
+
+    /**
+     * Sets the resource ID.
+     * @param id the resource ID
+     */
+    public void setResourceId(final Long id) {
+        this.resourceId = id;
+    }
+
+    /**
+     * Sets the office name.
+     * @param name the office name
+     */
+    public void setOfficeName(final String name) {
+        this.officeName = name;
+    }
+
+    /**
+     * Sets the display name.
+     * @param name the display name
+     */
+    public void setDisplayName(final String name) {
+        this.displayName = name;
     }
 
     /**

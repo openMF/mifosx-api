@@ -36,6 +36,8 @@ public class MifosXConnectException extends Exception {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getClass().getCanonicalName());
+        stringBuilder.append(System.getProperty("line.separator"));
         stringBuilder.append(this.errorCode.getCode());
         stringBuilder.append(": ");
         stringBuilder.append(this.errorCode.getMessage());

@@ -6,6 +6,8 @@
 package org.mifos.sdk.internal;
 
 import org.mifos.sdk.MifosXConnectException;
+import org.mifos.sdk.client.ClientService;
+import org.mifos.sdk.client.internal.RestClientService;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.office.internal.RestOfficeService;
 import org.mifos.sdk.staff.StaffService;
@@ -26,6 +28,7 @@ public class RestMifosXClient implements MifosXClient {
     private final RestAdapter restAdapter;
     private OfficeService officeService;
     private StaffService staffService;
+    private ClientService clientService;
     private String authenticationKey;
     private boolean loggedIn;
 
@@ -118,6 +121,24 @@ public class RestMifosXClient implements MifosXClient {
         }
 
         return this.staffService;
+    }
+
+    /**
+     * Returns the instance of {@link ClientService} to use the Client API.
+     * @throws MifosXConnectException
+     */
+    @Override
+    public ClientService clientService() throws MifosXConnectException {
+        if (!loggedIn) {
+            throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
+        }
+
+        if (this.clientService == null) {
+            this.clientService = new RestClientService(this.connectionProperties,
+                    this.restAdapter, this.authenticationKey);
+        }
+
+        return this.clientService;
     }
 
     /**
