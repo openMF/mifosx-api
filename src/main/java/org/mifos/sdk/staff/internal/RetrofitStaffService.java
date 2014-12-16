@@ -27,7 +27,7 @@ public interface RetrofitStaffService {
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
-     * @param staff @param office the {@link Staff} object with the details of the office
+     * @param staff the {@link Staff} object with the details of the office
      * @return a {@link Staff} with the office ID and the resource ID
      */
     @POST("/staff")

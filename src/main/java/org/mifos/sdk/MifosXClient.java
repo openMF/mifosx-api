@@ -5,6 +5,7 @@
  */
 package org.mifos.sdk;
 
+import org.mifos.sdk.client.ClientService;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.staff.StaffService;
 
@@ -37,5 +38,11 @@ public interface MifosXClient {
      * @throws MifosXConnectException
      */
     StaffService staffService() throws MifosXConnectException;
+
+    /**
+     * Returns an instance of {@link ClientService} to use the Client API.
+     * @throws MifosXConnectException
+     */
+    ClientService clientService() throws MifosXConnectException;
 
 }

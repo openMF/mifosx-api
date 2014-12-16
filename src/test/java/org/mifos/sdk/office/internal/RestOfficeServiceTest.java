@@ -5,11 +5,6 @@
  */
 package org.mifos.sdk.office.internal;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +21,11 @@ import retrofit.mime.TypedString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link RestOfficeService} and its various methods.
@@ -59,7 +58,7 @@ public class RestOfficeServiceTest {
         this.mockedAuthKey = "=hd$$34dd";
         this.defaultOffice = Office
                 .name("Head Office")
-                .openingDate("10 December 2014")
+                .openingDate(new Date())
                 .locale("en")
                 .dateFormat("dd MMMM yyyy")
                 .parentId((long) 1)

@@ -5,11 +5,6 @@
  */
 package org.mifos.sdk.staff.internal;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +22,9 @@ import retrofit.mime.TypedString;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.*;
 
 /**
  * Test for {@link RestStaffService} and its various methods.
@@ -57,8 +55,8 @@ public class RestStaffServiceTest {
         this.mockedAuthKey = "=hd$$34dd";
         this.defaultStaff = Staff
                 .officeId((long)1)
-                .firstName("Jacob")
-                .lastName("Davis")
+                .firstname("Jacob")
+                .lastname("Davis")
                 .build();
         this.defaultStaffId = (long)1;
         this.staffService = new RestStaffService(this.properties, this.restAdapter,
