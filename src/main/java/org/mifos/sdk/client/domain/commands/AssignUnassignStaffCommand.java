@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'assign and unassign staff' of the client command.
  */
-public class AssignUnassignStaff {
+public class AssignUnassignStaffCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link AssignUnassignStaff}
+     * new instance of {@link AssignUnassignStaffCommand}
      */
     public static class Builder {
 
@@ -26,17 +26,17 @@ public class AssignUnassignStaff {
 
         /**
          * Constructs a new AssignUnassignStaff instance with the provided parameter.
-         * @return a new instance of {@link AssignUnassignStaff}
+         * @return a new instance of {@link AssignUnassignStaffCommand}
          */
-        public AssignUnassignStaff build() {
-            return new AssignUnassignStaff(this.staffId);
+        public AssignUnassignStaffCommand build() {
+            return new AssignUnassignStaffCommand(this.staffId);
         }
 
     }
 
     private Long staffId;
 
-    private AssignUnassignStaff(final Long id) {
+    private AssignUnassignStaffCommand(final Long id) {
         this.staffId = id;
     }
 

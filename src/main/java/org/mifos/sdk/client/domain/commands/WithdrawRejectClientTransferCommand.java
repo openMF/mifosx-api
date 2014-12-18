@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'withdraw and reject transfer' of the client commands.
  */
-public class WithdrawRejectClientTransfer {
+public class WithdrawRejectClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link WithdrawRejectClientTransfer}
+     * new instance of {@link WithdrawRejectClientTransferCommand}
      */
     public static class Builder {
 
@@ -26,17 +26,17 @@ public class WithdrawRejectClientTransfer {
 
         /**
          * Constructs a new WithdrawRejectClientTransfer instance with the provided parameter.
-         * @return a new instance of {@link WithdrawRejectClientTransfer}
+         * @return a new instance of {@link WithdrawRejectClientTransferCommand}
          */
-        public WithdrawRejectClientTransfer build() {
-            return new WithdrawRejectClientTransfer(this.note);
+        public WithdrawRejectClientTransferCommand build() {
+            return new WithdrawRejectClientTransferCommand(this.note);
         }
 
     }
 
     private String note;
 
-    private WithdrawRejectClientTransfer(final String description) {
+    private WithdrawRejectClientTransferCommand(final String description) {
         this.note = description;
     }
 

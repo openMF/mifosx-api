@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import org.mifos.sdk.client.domain.commands.CloseClient;
+import org.mifos.sdk.client.domain.commands.CloseClientCommand;
 import org.mifos.sdk.internal.ParseUtil;
 
 import java.lang.reflect.Type;
@@ -17,10 +17,10 @@ import java.lang.reflect.Type;
 /**
  * JSON serializer for CloseClient.
  */
-public class CloseClientSerializer implements JsonSerializer<CloseClient> {
+public class CloseClientSerializer implements JsonSerializer<CloseClientCommand> {
 
     @Override
-    public JsonElement serialize(final CloseClient src, Type typeOfSrc,
+    public JsonElement serialize(final CloseClientCommand src, Type typeOfSrc,
                                  JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("locale", src.getLocale());

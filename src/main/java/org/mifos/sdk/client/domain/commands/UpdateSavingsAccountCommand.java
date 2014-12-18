@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'update savings account' of the client command.
  */
-public class UpdateSavingsAccount {
+public class UpdateSavingsAccountCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link UpdateSavingsAccount}
+     * new instance of {@link UpdateSavingsAccountCommand}
      */
     public static class Builder {
 
@@ -26,17 +26,17 @@ public class UpdateSavingsAccount {
 
         /**
          * Constructs a new UpdateSavingsAccount instance with the provided parameter.
-         * @return a new instance of {@link UpdateSavingsAccount}
+         * @return a new instance of {@link UpdateSavingsAccountCommand}
          */
-        public UpdateSavingsAccount build() {
-            return new UpdateSavingsAccount(this.savingsAccountId);
+        public UpdateSavingsAccountCommand build() {
+            return new UpdateSavingsAccountCommand(this.savingsAccountId);
         }
 
     }
 
     private Long savingsAccountId;
 
-    private UpdateSavingsAccount(final Long id) {
+    private UpdateSavingsAccountCommand(final Long id) {
         this.savingsAccountId = id;
     }
 

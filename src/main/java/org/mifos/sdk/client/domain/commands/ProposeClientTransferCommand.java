@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'propose transfer' of the client command.
  */
-public class ProposeClientTransfer {
+public class ProposeClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link ProposeClientTransfer}
+     * new instance of {@link ProposeClientTransferCommand}
      */
     public static class Builder {
 
@@ -40,10 +40,10 @@ public class ProposeClientTransfer {
 
         /**
          * Constructs a new ProposeClientTransfer instance with the provided parameter.
-         * @return a new instance of {@link ProposeClientTransfer}
+         * @return a new instance of {@link ProposeClientTransferCommand}
          */
-        public ProposeClientTransfer build() {
-            return new ProposeClientTransfer(this.destinationOfficeId, this.note);
+        public ProposeClientTransferCommand build() {
+            return new ProposeClientTransferCommand(this.destinationOfficeId, this.note);
         }
 
     }
@@ -51,8 +51,8 @@ public class ProposeClientTransfer {
     private Long destinationOfficeId;
     private String note;
 
-    private ProposeClientTransfer(final Long id,
-                                  final String description) {
+    private ProposeClientTransferCommand(final Long id,
+                                         final String description) {
         this.destinationOfficeId = id;
         this.note = description;
     }

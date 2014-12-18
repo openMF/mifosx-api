@@ -208,11 +208,11 @@ public class RestClientService implements ClientService {
     /**
      * Activates a pending client or results in an error if the client is already activated.
      * @param id the client ID
-     * @param command the {@link org.mifos.sdk.client.domain.commands.ActivateClient} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.ActivateClientCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void activateClient(Long id, ActivateClient command) throws MifosXConnectException,
+    public void activateClient(Long id, ActivateClientCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -240,11 +240,11 @@ public class RestClientService implements ClientService {
     /**
      * Closes a client.
      * @param id the client ID
-     * @param command the {@link org.mifos.sdk.client.domain.commands.CloseClient} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.CloseClientCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void closeClient(Long id, CloseClient command) throws MifosXConnectException,
+    public void closeClient(Long id, CloseClientCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -272,11 +272,11 @@ public class RestClientService implements ClientService {
     /**
      * Assigns staff to the client.
      * @param id the client ID
-     * @param command the {@link org.mifos.sdk.client.domain.commands.AssignUnassignStaff} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.AssignUnassignStaffCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void assignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+    public void assignStaff(Long id, AssignUnassignStaffCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -304,11 +304,11 @@ public class RestClientService implements ClientService {
     /**
      * Unassigns staff from the client.
      * @param id the client ID
-     * @param command the {@link AssignUnassignStaff} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.AssignUnassignStaffCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void unassignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+    public void unassignStaff(Long id, AssignUnassignStaffCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -336,11 +336,11 @@ public class RestClientService implements ClientService {
     /**
      * Updates the savings account of the client.
      * @param id the client ID
-     * @param command the {@link org.mifos.sdk.client.domain.commands.UpdateSavingsAccount} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.UpdateSavingsAccountCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void updateSavingsAccount(Long id, UpdateSavingsAccount command) throws MifosXConnectException,
+    public void updateSavingsAccount(Long id, UpdateSavingsAccountCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -368,11 +368,11 @@ public class RestClientService implements ClientService {
     /**
      * Proposes the transfer of the client.
      * @param id the client ID
-     * @param command the {@link org.mifos.sdk.client.domain.commands.ProposeClientTransfer} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.ProposeClientTransferCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void proposeTransfer(Long id, ProposeClientTransfer command) throws MifosXConnectException,
+    public void proposeTransfer(Long id, ProposeClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -400,11 +400,11 @@ public class RestClientService implements ClientService {
     /**
      * Withdraws transfer of the client.
      * @param id the client ID
-     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.WithdrawRejectClientTransferCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void withdrawTransfer(Long id, WithdrawRejectClientTransfer command) throws
+    public void withdrawTransfer(Long id, WithdrawRejectClientTransferCommand command) throws
             MifosXConnectException, MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -432,11 +432,11 @@ public class RestClientService implements ClientService {
     /**
      * Rejects transfer of the client.
      * @param id the client ID
-     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.WithdrawRejectClientTransferCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void rejectTransfer(Long id, WithdrawRejectClientTransfer command) throws
+    public void rejectTransfer(Long id, WithdrawRejectClientTransferCommand command) throws
             MifosXConnectException, MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -464,11 +464,11 @@ public class RestClientService implements ClientService {
     /**
      * Accepts the transfer of the client.
      * @param id the client ID
-     * @param command the {@link AcceptClientTransfer} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.AcceptClientTransferCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void acceptTransfer(Long id, AcceptClientTransfer command) throws MifosXConnectException,
+    public void acceptTransfer(Long id, AcceptClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);
@@ -496,11 +496,11 @@ public class RestClientService implements ClientService {
     /**
      * Proposes and accepts the transfer of the client.
      * @param id the client ID
-     * @param command the {@link ProposeAndAcceptClientTransfer} command
+     * @param command the {@link org.mifos.sdk.client.domain.commands.ProposeAndAcceptClientTransferCommand} command
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    public void proposeAndAcceptTransfer(Long id, ProposeAndAcceptClientTransfer command) throws
+    public void proposeAndAcceptTransfer(Long id, ProposeAndAcceptClientTransferCommand command) throws
             MifosXConnectException, MifosXResourceException {
         Preconditions.checkNotNull(id);
         Preconditions.checkNotNull(command);

@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'accept transfer' of the client command.
  */
-public class AcceptClientTransfer {
+public class AcceptClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link AcceptClientTransfer}
+     * new instance of {@link AcceptClientTransferCommand}
      */
     public static class Builder {
 
@@ -53,10 +53,10 @@ public class AcceptClientTransfer {
 
         /**
          * Constructs a new AcceptClientTransfer instance with the provided parameter.
-         * @return a new instance of {@link AcceptClientTransfer}
+         * @return a new instance of {@link AcceptClientTransferCommand}
          */
-        public AcceptClientTransfer build() {
-            return new AcceptClientTransfer(this.destinationGroupId, this.staffId, this.note);
+        public AcceptClientTransferCommand build() {
+            return new AcceptClientTransferCommand(this.destinationGroupId, this.staffId, this.note);
         }
 
     }
@@ -65,9 +65,9 @@ public class AcceptClientTransfer {
     private Long staffId;
     private String note;
 
-    private AcceptClientTransfer(final Long destinationGroupId,
-                                 final Long staffId,
-                                 final String description) {
+    private AcceptClientTransferCommand(final Long destinationGroupId,
+                                        final Long staffId,
+                                        final String description) {
         this.destinationGroupId = destinationGroupId;
         this.staffId = staffId;
         this.note = description;

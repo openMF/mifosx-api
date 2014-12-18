@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'propose and accept transfer' of the client command.
  */
-public class ProposeAndAcceptClientTransfer {
+public class ProposeAndAcceptClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link ProposeAndAcceptClientTransfer}
+     * new instance of {@link ProposeAndAcceptClientTransferCommand}
      */
     public static class Builder {
 
@@ -66,10 +66,10 @@ public class ProposeAndAcceptClientTransfer {
 
         /**
          * Constructs a new ProposeAndAcceptClientTransfer instance with the provided parameter.
-         * @return a new instance of {@link ProposeAndAcceptClientTransfer}
+         * @return a new instance of {@link ProposeAndAcceptClientTransferCommand}
          */
-        public ProposeAndAcceptClientTransfer build() {
-            return new ProposeAndAcceptClientTransfer(this.destinationOfficeId,
+        public ProposeAndAcceptClientTransferCommand build() {
+            return new ProposeAndAcceptClientTransferCommand(this.destinationOfficeId,
                     this.destinationGroupId, this.staffId, this.note);
         }
 
@@ -80,10 +80,10 @@ public class ProposeAndAcceptClientTransfer {
     private Long staffId;
     private String note;
 
-    private ProposeAndAcceptClientTransfer(final Long destinationOfficeId,
-                                           final Long destinationGroupId,
-                                           final Long staffId,
-                                           final String note) {
+    private ProposeAndAcceptClientTransferCommand(final Long destinationOfficeId,
+                                                  final Long destinationGroupId,
+                                                  final Long staffId,
+                                                  final String note) {
         this.destinationOfficeId = destinationOfficeId;
         this.destinationGroupId = destinationGroupId;
         this.staffId = staffId;
