@@ -754,10 +754,22 @@ public class Client {
         this.savingsId = id;
     }
 
+    /**
+     * Sets the first name of the client, cannot be null or empty. Note
+     * that the name cannot exceed 100 characters in length.
+     * @param name the first name of the client
+     * @return a new instance of {@link Builder}
+     */
     public static Builder firstname(final String name) {
         return new Builder(name, false);
     }
 
+    /**
+     * Sets the full name of the client, cannot be null or empty. Note
+     * that the name cannot exceed 100 characters in length.
+     * @param name the full name of the client
+     * @return a new instance of {@link Builder}
+     */
     public static Builder fullname(final String name) {
         return new Builder(name, true);
     }
