@@ -14,4 +14,6 @@ public interface RestConstants {
 
     public static String HEADER_TENANTID = "X-Mifos-Platform-TenantId";
 
+    public static String QUERY_COMMAND = "command";
+
 }

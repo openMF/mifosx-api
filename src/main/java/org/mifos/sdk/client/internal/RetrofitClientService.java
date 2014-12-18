@@ -5,9 +5,11 @@
  */
 package org.mifos.sdk.client.internal;
 
+import com.google.gson.JsonObject;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.internal.RestConstants;
+import retrofit.Callback;
 import retrofit.http.*;
 
 import java.util.Map;
@@ -80,5 +82,22 @@ public interface RetrofitClientService {
     public void deleteClient(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
                              @Header(RestConstants.HEADER_TENANTID) String tenantId,
                              @Path("id") Long id);
+
+    /**
+     * Executes a given command related to the Clients API.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param id the client ID
+     * @param command the command which is to be executed
+     * @param commandBody the command request body with all its parameters
+     */
+    @POST("/clients/{id}")
+    public void executeCommand(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                               @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                               @Path("id") Long id,
+                               @Query(RestConstants.QUERY_COMMAND) String command,
+                               @Body Object commandBody,
+                               Callback<JsonObject> callback);
 
 }

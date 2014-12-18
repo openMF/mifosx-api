@@ -1,20 +1,35 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 package org.mifos.sdk.client.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.ClientService;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.PageableClients;
+import org.mifos.sdk.client.domain.commands.*;
 import org.mifos.sdk.internal.ErrorCode;
 import org.mifos.sdk.internal.ServerResponseUtil;
+import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.client.Response;
+import retrofit.converter.ConversionException;
 
+import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Implements {@link ClientService} and the inner lying methods
+ * for communication with the Clients API.
+ */
 public class RestClientService implements ClientService {
 
     private final MifosXProperties connectionProperties;
@@ -189,5 +204,343 @@ public class RestClientService implements ClientService {
             }
         }
     }
+
+    /**
+     * Activates a pending client or results in an error if the client is already activated.
+     * @param id the client ID
+     * @param command the {@link org.mifos.sdk.client.domain.commands.ActivateClient} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void activateClient(Long id, ActivateClient command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "activate", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Closes a client.
+     * @param id the client ID
+     * @param command the {@link org.mifos.sdk.client.domain.commands.CloseClient} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void closeClient(Long id, CloseClient command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "close", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Assigns staff to the client.
+     * @param id the client ID
+     * @param command the {@link org.mifos.sdk.client.domain.commands.AssignUnassignStaff} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void assignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "assignStaff", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Unassigns staff from the client.
+     * @param id the client ID
+     * @param command the {@link AssignUnassignStaff} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void unassignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "unassignStaff", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Updates the savings account of the client.
+     * @param id the client ID
+     * @param command the {@link org.mifos.sdk.client.domain.commands.UpdateSavingsAccount} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void updateSavingsAccount(Long id, UpdateSavingsAccount command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "updateSavingsAccount", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Proposes the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link org.mifos.sdk.client.domain.commands.ProposeClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void proposeTransfer(Long id, ProposeClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "proposeTransfer", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Withdraws transfer of the client.
+     * @param id the client ID
+     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void withdrawTransfer(Long id, WithdrawRejectClientTransfer command) throws
+            MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "withdrawTransfer", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Rejects transfer of the client.
+     * @param id the client ID
+     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void rejectTransfer(Long id, WithdrawRejectClientTransfer command) throws
+            MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "rejectTransfer", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Accepts the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link AcceptClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void acceptTransfer(Long id, AcceptClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "acceptTransfer", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Proposes and accepts the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link ProposeAndAcceptClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void proposeAndAcceptTransfer(Long id, ProposeAndAcceptClientTransfer command) throws
+            MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(id);
+        Preconditions.checkNotNull(command);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
+                    id, "proposeAndAcceptTransfer", command, commandsCallback);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                    error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    Callback<JsonObject> commandsCallback = new Callback<JsonObject>() {
+        @Override
+        public void success(JsonObject o, Response response) {}
+        @Override
+        public void failure(RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw RetrofitError.networkError(error.getUrl(), new IOException());
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION) {
+                throw RetrofitError.conversionError(error.getUrl(), error.getResponse(), null, error.getSuccessType(), new ConversionException(error.getCause()));
+            } else if (error.getKind() == RetrofitError.Kind.HTTP) {
+                throw RetrofitError.httpError(error.getUrl(), error.getResponse(), null,
+                        error.getSuccessType());
+            } else if (error.getKind() == RetrofitError.Kind.UNEXPECTED) {
+                throw RetrofitError.unexpectedError(error.getUrl(), error.getCause());
+            }
+        }
+    };
 
 }

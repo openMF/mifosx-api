@@ -31,7 +31,6 @@ import static org.mockito.Mockito.*;
  */
 public class RestStaffServiceTest {
 
-    private RestAdapter restAdapter;
     private RetrofitStaffService retrofitStaffService;
     private MifosXProperties properties;
     private String mockedAuthKey;
@@ -44,7 +43,7 @@ public class RestStaffServiceTest {
 
     @Before
     public void setup() {
-        this.restAdapter = mock(RestAdapter.class);
+        final RestAdapter restAdapter = mock(RestAdapter.class);
         this.retrofitStaffService = mock(RetrofitStaffService.class);
         this.properties = MifosXProperties
                 .url("http://demo.openmf.org/mifosng-provider/api/v1")
@@ -59,14 +58,14 @@ public class RestStaffServiceTest {
                 .lastname("Davis")
                 .build();
         this.defaultStaffId = (long)1;
-        this.staffService = new RestStaffService(this.properties, this.restAdapter,
+        this.staffService = new RestStaffService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
         this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
         this.defaultDuplicateMessage = "some random message";
         this.defaultStatus = "all";
 
-        when(this.restAdapter.create(RetrofitStaffService.class)).thenReturn(this.retrofitStaffService);
+        when(restAdapter.create(RetrofitStaffService.class)).thenReturn(this.retrofitStaffService);
     }
 
     /**

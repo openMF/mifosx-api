@@ -10,6 +10,7 @@ import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.PageableClients;
+import org.mifos.sdk.client.domain.commands.*;
 
 import java.util.Map;
 
@@ -60,5 +61,105 @@ public interface ClientService {
      * @throws MifosXResourceException
      */
     void deleteClient(Long id) throws MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Activates a pending client or results in an error if the client is already activated.
+     * @param id the client ID
+     * @param command the {@link ActivateClient} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void activateClient(Long id, ActivateClient command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Closes a client.
+     * @param id the client ID
+     * @param command the {@link CloseClient} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void closeClient(Long id, CloseClient command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Assigns staff to the client.
+     * @param id the client ID
+     * @param command the {@link AssignUnassignStaff} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void assignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Unassigns staff from the client.
+     * @param id the client ID
+     * @param command the {@link AssignUnassignStaff} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void unassignStaff(Long id, AssignUnassignStaff command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Updates the savings account of the client.
+     * @param id the client ID
+     * @param command the {@link UpdateSavingsAccount} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void updateSavingsAccount(Long id, UpdateSavingsAccount command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Proposes the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link ProposeClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void proposeTransfer(Long id, ProposeClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Withdraws transfer of the client.
+     * @param id the client ID
+     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void withdrawTransfer(Long id, WithdrawRejectClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Rejects transfer of the client.
+     * @param id the client ID
+     * @param command the {@link WithdrawRejectClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void rejectTransfer(Long id, WithdrawRejectClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Accepts the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link AcceptClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void acceptTransfer(Long id, AcceptClientTransfer command) throws MifosXConnectException,
+            MifosXResourceException;
+
+    /**
+     * Proposes and accepts the transfer of the client.
+     * @param id the client ID
+     * @param command the {@link ProposeAndAcceptClientTransfer} command
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void proposeAndAcceptTransfer(Long id, ProposeAndAcceptClientTransfer command) throws
+            MifosXConnectException, MifosXResourceException;
 
 }
