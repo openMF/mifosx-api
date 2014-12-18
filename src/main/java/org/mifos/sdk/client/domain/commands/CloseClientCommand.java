@@ -12,11 +12,11 @@ import java.util.Date;
 /**
  * Used for handling 'closing' of the client command.
  */
-public class CloseClient {
+public class CloseClientCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link CloseClient}
+     * new instance of {@link CloseClientCommand}
      */
     public static class Builder {
 
@@ -69,10 +69,10 @@ public class CloseClient {
 
         /**
          * Constructs a new CloseClient instance with the provided parameter.
-         * @return a new instance of {@link CloseClient}
+         * @return a new instance of {@link CloseClientCommand}
          */
-        public CloseClient build() {
-            return new CloseClient(this.locale, this.dateFormat,
+        public CloseClientCommand build() {
+            return new CloseClientCommand(this.locale, this.dateFormat,
                     this.closureDate, this.closureReasonId);
         }
 
@@ -83,10 +83,10 @@ public class CloseClient {
     private Date closureDate;
     private String closureReasonId;
 
-    private CloseClient(final String lang,
-                        final String format,
-                        final Date date,
-                        final String closureReason) {
+    private CloseClientCommand(final String lang,
+                               final String format,
+                               final Date date,
+                               final String closureReason) {
         this.locale = lang;
         this.dateFormat = format;
         this.closureDate = date;

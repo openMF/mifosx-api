@@ -12,11 +12,11 @@ import java.util.Date;
 /**
  * Used for handling 'activation' of the client command.
  */
-public class ActivateClient {
+public class ActivateClientCommand {
 
     /**
      * Utility class to ease the process of building a
-     * new instance of {@link ActivateClient}
+     * new instance of {@link ActivateClientCommand}
      */
     public static class Builder {
 
@@ -55,10 +55,10 @@ public class ActivateClient {
 
         /**
          * Constructs a new ActivateClient instance with the provided parameter.
-         * @return a new instance of {@link ActivateClient}
+         * @return a new instance of {@link ActivateClientCommand}
          */
-        public ActivateClient build() {
-            return new ActivateClient(this.locale, this.dateFormat, this.activationDate);
+        public ActivateClientCommand build() {
+            return new ActivateClientCommand(this.locale, this.dateFormat, this.activationDate);
         }
 
     }
@@ -67,9 +67,9 @@ public class ActivateClient {
     private String dateFormat;
     private Date activationDate;
 
-    private ActivateClient(final String lang,
-                           final String format,
-                           final Date date) {
+    private ActivateClientCommand(final String lang,
+                                  final String format,
+                                  final Date date) {
         this.locale = lang;
         this.dateFormat = format;
         this.activationDate = date;

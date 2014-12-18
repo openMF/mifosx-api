@@ -6,7 +6,7 @@
 package org.mifos.sdk.internal.serializers.commands.Client;
 
 import com.google.gson.JsonObject;
-import org.mifos.sdk.client.domain.commands.ActivateClient;
+import org.mifos.sdk.client.domain.commands.ActivateClientCommand;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -17,10 +17,10 @@ import java.lang.reflect.Type;
 /**
  * JSON serializer for ActivateClient.
  */
-public class ActivateClientSerializer implements JsonSerializer<ActivateClient> {
+public class ActivateClientSerializer implements JsonSerializer<ActivateClientCommand> {
 
     @Override
-    public JsonElement serialize(final ActivateClient src, Type typeOfSrc,
+    public JsonElement serialize(final ActivateClientCommand src, Type typeOfSrc,
                                  JsonSerializationContext context) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("locale", src.getLocale());
