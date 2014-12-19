@@ -7,11 +7,13 @@ package org.mifos.sdk.client.internal;
 
 import com.google.gson.JsonObject;
 import org.mifos.sdk.client.domain.Client;
+import org.mifos.sdk.client.domain.ClientIdentifier;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.internal.RestConstants;
 import retrofit.Callback;
 import retrofit.http.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,13 +52,13 @@ public interface RetrofitClientService {
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
-     * @param id the client ID
+     * @param clientId the client ID
      * @return the {@link Client} searched for
      */
-    @GET("/clients/{id}")
+    @GET("/clients/{clientId}")
     public Client findClient(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
                              @Header(RestConstants.HEADER_TENANTID) String tenantId,
-                             @Path("id") Long id);
+                             @Path("clientId") Long clientId);
 
     /**
      * Updates one particular client.
@@ -65,10 +67,10 @@ public interface RetrofitClientService {
      * @param tenantId the tenant ID
      * @param client a {@link Client} with details to update
      */
-    @PUT("/clients/{id}")
+    @PUT("/clients/{clientId}")
     public void updateClient(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
                              @Header(RestConstants.HEADER_TENANTID) String tenantId,
-                             @Path("id") Long id,
+                             @Path("clientId") Long clientId,
                              @Body Client client);
 
     /**
@@ -76,28 +78,101 @@ public interface RetrofitClientService {
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
-     * @param id the client ID
+     * @param clientId the client ID
      */
-    @DELETE("/clients/{id}")
+    @DELETE("/clients/{clientId}")
     public void deleteClient(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
                              @Header(RestConstants.HEADER_TENANTID) String tenantId,
-                             @Path("id") Long id);
+                             @Path("clientId") Long clientId);
 
     /**
      * Executes a given command related to the Clients API.
      * @param authenticationKey the authentication key obtained by
      *                          calling {@link org.mifos.sdk.MifosXClient#login()}
      * @param tenantId the tenant ID
-     * @param id the client ID
+     * @param clientId the client ID
      * @param command the command which is to be executed
      * @param commandBody the command request body with all its parameters
      */
-    @POST("/clients/{id}")
+    @POST("/clients/{clientId}")
     public void executeCommand(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
                                @Header(RestConstants.HEADER_TENANTID) String tenantId,
-                               @Path("id") Long id,
+                               @Path("clientId") Long clientId,
                                @Query(RestConstants.QUERY_COMMAND) String command,
                                @Body Object commandBody,
                                Callback<JsonObject> callback);
+
+    /**
+     * Creates a new identifier.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param clientId the client ID
+     * @param identifier a {@link ClientIdentifier} object
+     * @return a {@link ClientIdentifier} containing the server response parameters
+     */
+    @POST("/clients/{clientId}/identifiers")
+    public ClientIdentifier createIdentifier(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                             @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                             @Path("clientId") Long clientId,
+                                             @Body ClientIdentifier identifier);
+
+    /**
+     * Retrieves all available clients.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param clientId the client ID
+     * @return a list of {@link ClientIdentifier}
+     */
+    @GET("/clients/{clientId}/identifiers")
+    public List<ClientIdentifier> fetchIdentifiers(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                                   @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                                   @Path("clientId") Long clientId);
+
+    /**
+     * Retrieves a particular identifier.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param clientId the client ID
+     * @param identifierId the identifier ID
+     * @return the {@link ClientIdentifier} searched for
+     */
+    @GET("/clients/{clientId}/identifiers/{identifierId}")
+    public ClientIdentifier findIdentifier(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                           @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                           @Path("clientId") Long clientId,
+                                           @Path("identifierId") Long identifierId);
+
+    /**
+     * Updates a particular identifier.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param clientId the client ID
+     * @param identifierId the identifier ID
+     * @param identifier a {@link ClientIdentifier} object with details to update
+     */
+    @PUT("/clients/{clientId}/identifiers/{identifierId}")
+    public void updateIdentifier(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                 @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                 @Path("clientId") Long clientId,
+                                 @Path("identifierId") Long identifierId,
+                                 @Body ClientIdentifier identifier);
+
+    /**
+     * Deletes a particular identifier.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param clientId the client ID
+     * @param identifierId the identifier ID
+     */
+    @DELETE("/clients/{clientId}/identifiers/{identifierId}")
+    public void deleteIdentifier(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                 @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                 @Path("clientId") Long clientId,
+                                 @Path("identifierId") Long identifierId);
 
 }
