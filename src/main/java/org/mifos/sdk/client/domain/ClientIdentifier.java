@@ -159,4 +159,5 @@ public class ClientIdentifier {
     public static Builder documentKey(final String key) {
         return new Builder(key);
     }
+
 }
