@@ -25,6 +25,7 @@ public enum ErrorCode {
     STAFF_NOT_FOUND(201, "Staff not found."),
     INVALID_STATUS(202, "Invalid staff status passed. Should only be active, inactive or all."),
     CLIENT_NOT_FOUND(203, "Client not found."),
+    CLIENT_OR_IDENTIFIER_NOT_FOUND(204, "Client or identifier not found."),
     ;
 
     private int code;

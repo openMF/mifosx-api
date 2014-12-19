@@ -12,6 +12,7 @@ import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.domain.Client;
+import org.mifos.sdk.client.domain.ClientIdentifier;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.client.domain.commands.*;
 import org.mifos.sdk.internal.ErrorCode;
@@ -41,6 +42,8 @@ public class RestClientServiceTest {
     private RestClientService clientService;
     private String defaultDuplicateJSON;
     private String defaultDuplicateMessage;
+    private ClientIdentifier clientIdentifier;
+    private Long defaultIdentifierId;
 
     /**
      * Setup all the components before testing.
@@ -67,6 +70,8 @@ public class RestClientServiceTest {
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
         this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
         this.defaultDuplicateMessage = "some random message";
+        this.clientIdentifier = mock(ClientIdentifier.class);
+        this.defaultIdentifierId = (long)1;
 
         when(restAdapter.create(RetrofitClientService.class)).thenReturn(this.retrofitClientService);
     }
@@ -345,7 +350,7 @@ public class RestClientServiceTest {
      * Test for {@link ErrorCode#NOT_CONNECTED} exception for findClient().
      */
     @Test
-    public void testFindOfficeNotConnectedException() {
+    public void testFindClientNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
@@ -368,7 +373,7 @@ public class RestClientServiceTest {
      * Test for duplicate exception for findClient().
      */
     @Test
-    public void testFindOfficeDuplicateException() {
+    public void testFindClientDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
 
@@ -392,7 +397,7 @@ public class RestClientServiceTest {
      * Test for conversion error exception for findClient().
      */
     @Test
-    public void testFindOfficeConversionException() {
+    public void testFindClientConversionException() {
         final RetrofitError error = mock(RetrofitError.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
@@ -415,7 +420,7 @@ public class RestClientServiceTest {
      * Test for not found exception for findClient().
      */
     @Test
-    public void testFindOfficeNotFoundException() {
+    public void testFindClientNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
 
@@ -439,7 +444,7 @@ public class RestClientServiceTest {
      * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for findClient().
      */
     @Test
-    public void testFindOfficeInvalidAuthKeyException() {
+    public void testFindClientInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
@@ -463,7 +468,7 @@ public class RestClientServiceTest {
      * Test for {@link ErrorCode#UNKNOWN} exception for findClient().
      */
     @Test
-    public void testFindOfficeUnknownException() {
+    public void testFindClientUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
 
@@ -1952,6 +1957,700 @@ public class RestClientServiceTest {
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for successful creation of an identifier.
+     */
+    @Test
+    public void testCreateIdentifier() {
+        final ClientIdentifier mockedClientIdentifier = mock(ClientIdentifier.class);
+
+        when(mockedClientIdentifier.getClientId()).thenReturn(this.defaultClientId);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenReturn(mockedClientIdentifier);
+
+        try {
+            final Long id = this.clientService.createIdentifier(this.defaultClientId,
+                this.clientIdentifier).getClientId();
+
+            Assert.assertNotNull(id);
+            Assert.assertEquals(id, this.defaultClientId);
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link org.mifos.sdk.internal.ErrorCode#NOT_CONNECTED} exception for createIdentifier().
+     */
+    @Test
+    public void testCreateIdentifierNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenThrow(error);
+
+        try {
+            this.clientService.createIdentifier(this.defaultClientId, this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for createIdentifier().
+     */
+    @Test
+    public void testCreateIdentifierDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(),
+            new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenThrow(error);
+
+        try {
+            this.clientService.createIdentifier(this.defaultClientId, this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for conversion error exception for createIdentifier().
+     */
+    @Test
+    public void testCreateIdentifierConversionException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenThrow(error);
+
+        try {
+            this.clientService.createIdentifier(this.defaultClientId, this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for createIdentifier().
+     */
+    @Test
+    public void testCreateIdentifierInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenThrow(error);
+
+        try {
+            this.clientService.createIdentifier(this.defaultClientId, this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for createIdentifier().
+     */
+    @Test
+    public void testCreateIdentifierUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.clientIdentifier)).thenThrow(error);
+
+        try {
+            this.clientService.createIdentifier(this.defaultClientId, this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test to fetch all available identifiers.
+     */
+    @Test
+    public void testFetchIdentifiers() {
+        final List<ClientIdentifier> identifierList = Arrays.asList(this.clientIdentifier, this.clientIdentifier);
+
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenReturn(identifierList);
+
+        try {
+            final List<ClientIdentifier> responseIdentifiers = this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.assertNotNull(responseIdentifiers);
+            Assert.assertThat(responseIdentifiers, equalTo(identifierList));
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for fetchIdentifiers().
+     */
+    @Test
+    public void testFetchIdentifiersNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenThrow(error);
+
+        try {
+            this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for conversion error exception for fetchIdentifiers().
+     */
+    @Test
+    public void testFetchIdentifiersConversionException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenThrow(error);
+
+        try {
+            this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for fetchIdentifiers().
+     */
+    @Test
+    public void testFetchIdentifiersInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenThrow(error);
+
+        try {
+            this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for fetchIdentifiers().
+     */
+    @Test
+    public void testFetchIdentifiersUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenThrow(error);
+
+        try {
+            this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#CLIENT_NOT_FOUND} exception for fetchIdentifiers().
+     */
+    @Test
+    public void testFetchIdentifiersNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.fetchIdentifiers(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId)).thenThrow(error);
+
+        try {
+            this.clientService.fetchIdentifiers(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test to find one particular identifier.
+     */
+    @Test
+    public void testFindIdentifier() {
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenReturn(this.clientIdentifier);
+
+        try {
+            final ClientIdentifier responseIdentifier = this.clientService.findIdentifier(this.defaultClientId,
+                this.defaultIdentifierId);
+
+            Assert.assertNotNull(responseIdentifier);
+            Assert.assertThat(responseIdentifier, equalTo(this.clientIdentifier));
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for conversion error exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierConversionException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch(MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_OR_IDENTIFIER_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch(MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for findIdentifier().
+     */
+    @Test
+    public void testFindIdentifierUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.findIdentifier(this.mockedAuthKey, this.properties
+            .getTenant(), this.defaultClientId, this.defaultIdentifierId)).thenThrow(error);
+
+        try {
+            this.clientService.findIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for updateIdentifier().
+     */
+    @Test
+    public void testUpdateIdentifierNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitClientService).updateIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId,
+            this.clientIdentifier);
+
+        try {
+            this.clientService.updateIdentifier(this.defaultClientId, this.defaultIdentifierId,
+                this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for updateIdentifier().
+     */
+    @Test
+    public void testUpdateIdentifierDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).updateIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId,
+            this.clientIdentifier);
+
+        try {
+            this.clientService.updateIdentifier(this.defaultClientId, this.defaultIdentifierId,
+                this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for updateIdentifier().
+     */
+    @Test
+    public void testUpdateIdentifierInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).updateIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId,
+            this.clientIdentifier);
+
+        try {
+            this.clientService.updateIdentifier(this.defaultClientId, this.defaultIdentifierId,
+                this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for updateIdentifier().
+     */
+    @Test
+    public void testUpdateIdentifierNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).updateIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId,
+            this.clientIdentifier);
+
+        try {
+            this.clientService.updateIdentifier(this.defaultClientId, this.defaultIdentifierId,
+                this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_OR_IDENTIFIER_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for updateIdentifier().
+     */
+    @Test
+    public void testUpdateIdentifierUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).updateIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId,
+            this.clientIdentifier);
+
+        try {
+            this.clientService.updateIdentifier(this.defaultClientId, this.defaultIdentifierId,
+                this.clientIdentifier);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for deleteIdentifier().
+     */
+    @Test
+    public void testDeleteIdentifierNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
+
+        try {
+            this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for deleteIdentifier().
+     */
+    @Test
+    public void testDeleteIdentifierDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
+
+        try {
+            this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for deleteIdentifier().
+     */
+    @Test
+    public void testDeleteIdentifierInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
+
+        try {
+            this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for deleteIdentifier().
+     */
+    @Test
+    public void testDeleteIdentifierNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
+
+        try {
+            this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_OR_IDENTIFIER_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for deleteIdentifier().
+     */
+    @Test
+    public void testDeleteIdentifierUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
+
+        try {
+            this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
 
             Assert.fail();
         } catch (MifosXConnectException e) {

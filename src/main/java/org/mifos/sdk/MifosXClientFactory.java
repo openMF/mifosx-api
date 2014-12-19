@@ -9,9 +9,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import org.mifos.sdk.client.domain.Client;
+import org.mifos.sdk.client.domain.ClientIdentifier;
 import org.mifos.sdk.client.domain.commands.ActivateClientCommand;
 import org.mifos.sdk.client.domain.commands.CloseClientCommand;
 import org.mifos.sdk.internal.RestMifosXClient;
+import org.mifos.sdk.internal.serializers.ClientIdentifierSerializer;
 import org.mifos.sdk.internal.serializers.ClientSerializer;
 import org.mifos.sdk.internal.serializers.OfficeSerializer;
 import org.mifos.sdk.internal.serializers.StaffSerializer;
@@ -42,6 +44,8 @@ public final class MifosXClientFactory {
                 // commands serializers
                 .registerTypeAdapter(ActivateClientCommand.class, new ActivateClientSerializer())
                 .registerTypeAdapter(CloseClientCommand.class, new CloseClientSerializer())
+                // identifier serializers
+                .registerTypeAdapter(ClientIdentifier.class, new ClientIdentifierSerializer())
                 .create();
         final RestAdapter restAdapter = new RestAdapter.Builder()
                 .setClient(new OkClient(new OkHttpClient()))
