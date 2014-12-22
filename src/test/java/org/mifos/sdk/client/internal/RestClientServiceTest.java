@@ -5,6 +5,7 @@
  */
 package org.mifos.sdk.client.internal;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.ClientIdentifier;
+import org.mifos.sdk.client.domain.ClientImage;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.client.domain.commands.*;
 import org.mifos.sdk.internal.ErrorCode;
@@ -22,6 +24,10 @@ import retrofit.client.Header;
 import retrofit.client.Response;
 import retrofit.mime.TypedString;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,12 +50,14 @@ public class RestClientServiceTest {
     private String defaultDuplicateMessage;
     private ClientIdentifier clientIdentifier;
     private Long defaultIdentifierId;
+    private BufferedImage defaultImage;
+    private TypedString defaultBase64Data;
 
     /**
      * Setup all the components before testing.
      */
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         final RestAdapter restAdapter = mock(RestAdapter.class);
         this.retrofitClientService = mock(RetrofitClientService.class);
         this.properties = MifosXProperties
@@ -68,10 +76,17 @@ public class RestClientServiceTest {
         this.clientService = new RestClientService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
-        this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
+        this.defaultDuplicateJSON = "{\"errors\":[{\"developerMessage\":\"some random message\"}]}";
         this.defaultDuplicateMessage = "some random message";
         this.clientIdentifier = mock(ClientIdentifier.class);
         this.defaultIdentifierId = (long)1;
+        this.defaultImage = ImageIO.read(RestClientServiceTest.class.getResource("/profile_pic.png"));
+
+        // generate the Data URI for the default image
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(this.defaultImage, "png", outputStream);
+        final byte[] binaryData = outputStream.toByteArray();
+        this.defaultBase64Data = new TypedString("data:image/png;base64," + Base64.encodeBase64String(binaryData));
 
         when(restAdapter.create(RetrofitClientService.class)).thenReturn(this.retrofitClientService);
     }
@@ -736,8 +751,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "activate", command,
-                this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "activate", command);
 
         try {
             this.clientService.activateClient(this.defaultClientId, command);
@@ -762,7 +776,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "activate", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "activate", command);
 
         try {
             this.clientService.activateClient(this.defaultClientId, command);
@@ -787,7 +801,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "activate", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "activate", command);
 
         try {
             this.clientService.activateClient(this.defaultClientId, command);
@@ -812,7 +826,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "activate", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "activate", command);
 
         try {
             this.clientService.activateClient(this.defaultClientId, command);
@@ -837,7 +851,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "activate", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "activate", command);
 
         try {
             this.clientService.activateClient(this.defaultClientId, command);
@@ -861,7 +875,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "close", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "close", command);
 
         try {
             this.clientService.closeClient(this.defaultClientId, command);
@@ -886,7 +900,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "close", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "close", command);
 
         try {
             this.clientService.closeClient(this.defaultClientId, command);
@@ -911,7 +925,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "close", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "close", command);
 
         try {
             this.clientService.closeClient(this.defaultClientId, command);
@@ -936,7 +950,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "close", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "close", command);
 
         try {
             this.clientService.closeClient(this.defaultClientId, command);
@@ -961,7 +975,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "close", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "close", command);
 
         try {
             this.clientService.closeClient(this.defaultClientId, command);
@@ -985,7 +999,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "assignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "assignStaff", command);
 
         try {
             this.clientService.assignStaff(this.defaultClientId, command);
@@ -1010,7 +1024,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "assignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "assignStaff", command);
 
         try {
             this.clientService.assignStaff(this.defaultClientId, command);
@@ -1035,7 +1049,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "assignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "assignStaff", command);
 
         try {
             this.clientService.assignStaff(this.defaultClientId, command);
@@ -1060,7 +1074,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "assignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "assignStaff", command);
 
         try {
             this.clientService.assignStaff(this.defaultClientId, command);
@@ -1085,7 +1099,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "assignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "assignStaff", command);
 
         try {
             this.clientService.assignStaff(this.defaultClientId, command);
@@ -1109,7 +1123,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command);
 
         try {
             this.clientService.unassignStaff(this.defaultClientId, command);
@@ -1134,7 +1148,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command);
 
         try {
             this.clientService.unassignStaff(this.defaultClientId, command);
@@ -1159,7 +1173,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command);
 
         try {
             this.clientService.unassignStaff(this.defaultClientId, command);
@@ -1184,7 +1198,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command);
 
         try {
             this.clientService.unassignStaff(this.defaultClientId, command);
@@ -1209,7 +1223,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "unassignStaff", command);
 
         try {
             this.clientService.unassignStaff(this.defaultClientId, command);
@@ -1233,7 +1247,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command);
 
         try {
             this.clientService.updateSavingsAccount(this.defaultClientId, command);
@@ -1258,7 +1272,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command);
 
         try {
             this.clientService.updateSavingsAccount(this.defaultClientId, command);
@@ -1283,7 +1297,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command);
 
         try {
             this.clientService.updateSavingsAccount(this.defaultClientId, command);
@@ -1308,7 +1322,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command);
 
         try {
             this.clientService.updateSavingsAccount(this.defaultClientId, command);
@@ -1333,7 +1347,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "updateSavingsAccount", command);
 
         try {
             this.clientService.updateSavingsAccount(this.defaultClientId, command);
@@ -1357,7 +1371,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command);
 
         try {
             this.clientService.proposeTransfer(this.defaultClientId, command);
@@ -1382,7 +1396,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command);
 
         try {
             this.clientService.proposeTransfer(this.defaultClientId, command);
@@ -1407,7 +1421,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command);
 
         try {
             this.clientService.proposeTransfer(this.defaultClientId, command);
@@ -1432,7 +1446,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command);
 
         try {
             this.clientService.proposeTransfer(this.defaultClientId, command);
@@ -1457,7 +1471,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeTransfer", command);
 
         try {
             this.clientService.proposeTransfer(this.defaultClientId, command);
@@ -1481,7 +1495,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command);
 
         try {
             this.clientService.withdrawTransfer(this.defaultClientId, command);
@@ -1506,7 +1520,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command);
 
         try {
             this.clientService.withdrawTransfer(this.defaultClientId, command);
@@ -1531,7 +1545,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command);
 
         try {
             this.clientService.withdrawTransfer(this.defaultClientId, command);
@@ -1556,7 +1570,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command);
 
         try {
             this.clientService.withdrawTransfer(this.defaultClientId, command);
@@ -1581,7 +1595,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "withdrawTransfer", command);
 
         try {
             this.clientService.withdrawTransfer(this.defaultClientId, command);
@@ -1605,7 +1619,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command);
 
         try {
             this.clientService.rejectTransfer(this.defaultClientId, command);
@@ -1630,7 +1644,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command);
 
         try {
             this.clientService.rejectTransfer(this.defaultClientId, command);
@@ -1655,7 +1669,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command);
 
         try {
             this.clientService.rejectTransfer(this.defaultClientId, command);
@@ -1680,7 +1694,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command);
 
         try {
             this.clientService.rejectTransfer(this.defaultClientId, command);
@@ -1705,7 +1719,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "rejectTransfer", command);
 
         try {
             this.clientService.rejectTransfer(this.defaultClientId, command);
@@ -1729,7 +1743,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command);
 
         try {
             this.clientService.acceptTransfer(this.defaultClientId, command);
@@ -1754,7 +1768,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command);
 
         try {
             this.clientService.acceptTransfer(this.defaultClientId, command);
@@ -1779,7 +1793,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command);
 
         try {
             this.clientService.acceptTransfer(this.defaultClientId, command);
@@ -1804,7 +1818,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command);
 
         try {
             this.clientService.acceptTransfer(this.defaultClientId, command);
@@ -1829,7 +1843,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "acceptTransfer", command);
 
         try {
             this.clientService.acceptTransfer(this.defaultClientId, command);
@@ -1853,7 +1867,7 @@ public class RestClientServiceTest {
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command);
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
@@ -1878,7 +1892,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command);
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
@@ -1903,7 +1917,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command);
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
@@ -1928,7 +1942,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command);
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
@@ -1953,7 +1967,7 @@ public class RestClientServiceTest {
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
-                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command, this.clientService.commandsCallback);
+                this.properties.getTenant(), this.defaultClientId, "proposeAndAcceptTransfer", command);
 
         try {
             this.clientService.proposeAndAcceptTransfer(this.defaultClientId, command);
@@ -2553,6 +2567,7 @@ public class RestClientServiceTest {
         doThrow(error).when(this.retrofitClientService).deleteIdentifier(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultIdentifierId);
 
+
         try {
             this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
 
@@ -2651,6 +2666,419 @@ public class RestClientServiceTest {
 
         try {
             this.clientService.deleteIdentifier(this.defaultClientId, this.defaultIdentifierId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for successful upload of a client image.
+     */
+    @Test
+    public void testUploadClientImage() {
+        final ClientImage clientImage = mock(ClientImage.class);
+
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenReturn(clientImage);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        when(clientImage.getResourceId()).thenReturn(this.defaultClientId);
+
+        try {
+            Long id = this.clientService.uploadImage(this.defaultClientId, clientImage).getResourceId();
+
+            Assert.assertNotNull(id);
+            Assert.assertEquals(id, this.defaultClientId);
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link org.mifos.sdk.internal.ErrorCode#NOT_CONNECTED} exception for uploadImage().
+     */
+    @Test
+    public void testUploadClientImageNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
+
+        try {
+            this.clientService.uploadImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for uploadImage().
+     */
+    @Test
+    public void testUploadClientImageDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(),
+            new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
+
+        try {
+            this.clientService.uploadImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for conversion error exception for uploadImage().
+     */
+    @Test
+    public void testUploadClientImageConversionException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
+
+        try {
+            this.clientService.uploadImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for uploadImage().
+     */
+    @Test
+    public void testUploadClientImageInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
+
+        try {
+            this.clientService.uploadImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for uploadImage().
+     */
+    @Test
+    public void testUploadClientImageUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        when(error.getResponse()).thenReturn(response);
+        when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
+            this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
+
+        try {
+            this.clientService.uploadImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for updateImage().
+     */
+    @Test
+    public void testUpdateClientImageNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
+
+        try {
+            this.clientService.updateImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for updateImage().
+     */
+    @Test
+    public void testUpdateClientImageDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
+
+        try {
+            this.clientService.updateImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for updateImage().
+     */
+    @Test
+    public void testUpdateClientImageInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
+
+        try {
+            this.clientService.updateImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for updateImage().
+     */
+    @Test
+    public void testUpdateClientImageNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
+
+        try {
+            this.clientService.updateImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for updateImage().
+     */
+    @Test
+    public void testUpdateClientImageUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ClientImage clientImage = mock(ClientImage.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        when(clientImage.getImage()).thenReturn(this.defaultImage);
+        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
+        doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
+
+        try {
+            this.clientService.updateImage(this.defaultClientId, clientImage);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for deleteImage().
+     */
+    @Test
+    public void testDeleteClientImageNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitClientService).deleteImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId);
+
+        try {
+            this.clientService.deleteImage(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for deleteImage().
+     */
+    @Test
+    public void testDeleteClientImageDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId);
+
+        try {
+            this.clientService.deleteImage(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for deleteImage().
+     */
+    @Test
+    public void testDeleteClientImageInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId);
+
+        try {
+            this.clientService.deleteImage(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for deleteImage().
+     */
+    @Test
+    public void testDeleteClientImageNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId);
+
+        try {
+            this.clientService.deleteImage(this.defaultClientId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.CLIENT_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for deleteImage().
+     */
+    @Test
+    public void testDeleteClientImageUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitClientService).deleteImage(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultClientId);
+
+        try {
+            this.clientService.deleteImage(this.defaultClientId);
 
             Assert.fail();
         } catch (MifosXConnectException e) {

@@ -5,16 +5,17 @@
  */
 package org.mifos.sdk.client;
 
-import com.google.common.collect.ImmutableMap;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Map;
+
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.ClientIdentifier;
+import org.mifos.sdk.client.domain.ClientImage;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.client.domain.commands.*;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Interface to communicate with the Client API.
@@ -216,5 +217,46 @@ public interface ClientService {
      */
     void deleteIdentifier(Long clientId, Long identifierId) throws MifosXConnectException,
             MifosXResourceException;
+
+    /**
+     * Uploads a client image.
+     * @param clientId the client ID
+     * @param clientImage the {@link ClientImage}
+     * @return a {@link ClientImage} with the resource ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    ClientImage uploadImage(Long clientId, ClientImage clientImage) throws MifosXConnectException,
+        MifosXResourceException;
+
+    /**
+     * Retrieves a client image.
+     * @param clientId the client ID
+     * @param maxWidth Optional: the maximum width of the image
+     * @param maxHeight Optional: the maximum height of the image
+     * @return a {@link ClientImage} with the image and the type if found, null otherwise
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    ClientImage findImage(Long clientId, Long maxWidth, Long maxHeight) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Updates a client image.
+     * @param clientId the client ID
+     * @param clientImage the {@link ClientImage}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void updateImage(Long clientId, ClientImage clientImage) throws MifosXConnectException,
+        MifosXResourceException;
+
+    /**
+     * Deletes a client image.
+     * @param clientId the client ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void deleteImage(Long clientId) throws MifosXConnectException, MifosXResourceException;
 
 }
