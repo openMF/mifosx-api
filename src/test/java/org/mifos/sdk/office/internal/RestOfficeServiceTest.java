@@ -66,7 +66,7 @@ public class RestOfficeServiceTest {
         this.officeService = new RestOfficeService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
-        this.defaultDuplicateJSON = "{\"developerMessage\": \"some random message\"}";
+        this.defaultDuplicateJSON = "{\"errors\":[{\"developerMessage\":\"some random message\"}]}";
         this.defaultDuplicateMessage = "some random message";
 
         when(restAdapter.create(RetrofitOfficeService.class)).thenReturn(this.retrofitOfficeService);

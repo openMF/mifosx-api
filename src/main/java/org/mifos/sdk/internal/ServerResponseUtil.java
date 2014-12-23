@@ -2,7 +2,6 @@ package org.mifos.sdk.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import retrofit.client.Response;
 
@@ -27,8 +26,9 @@ public class ServerResponseUtil {
             final InputStream stream = response.getBody().in();
             final InputStreamReader streamReader = new InputStreamReader(stream);
             final JsonObject responseJSON = new Gson().fromJson(streamReader, JsonObject.class);
-            final JsonElement message = responseJSON.get("developerMessage");
-            return message.getAsString();
+            final JsonObject message = responseJSON.get("errors").getAsJsonArray()
+                .get(0).getAsJsonObject();
+            return message.get("developerMessage").getAsString();
         } catch(IOException e) {
             throw new IllegalStateException(e.getMessage());
         }

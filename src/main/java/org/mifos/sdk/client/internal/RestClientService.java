@@ -7,26 +7,37 @@ package org.mifos.sdk.client.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.JsonObject;
+import com.squareup.okhttp.OkHttpClient;
+import org.apache.commons.codec.binary.Base64;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.client.ClientService;
 import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.ClientIdentifier;
+import org.mifos.sdk.client.domain.ClientImage;
 import org.mifos.sdk.client.domain.PageableClients;
 import org.mifos.sdk.client.domain.commands.*;
 import org.mifos.sdk.internal.ErrorCode;
 import org.mifos.sdk.internal.ServerResponseUtil;
-import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.client.OkClient;
 import retrofit.converter.ConversionException;
+import retrofit.converter.Converter;
+import retrofit.mime.TypedInput;
+import retrofit.mime.TypedOutput;
+import retrofit.mime.TypedString;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Implements {@link ClientService} and the inner lying methods
@@ -221,7 +232,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "activate", command, commandsCallback);
+                    clientId, "activate", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -253,7 +264,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "close", command, commandsCallback);
+                    clientId, "close", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -285,7 +296,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "assignStaff", command, commandsCallback);
+                    clientId, "assignStaff", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -317,7 +328,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "unassignStaff", command, commandsCallback);
+                    clientId, "unassignStaff", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -349,7 +360,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "updateSavingsAccount", command, commandsCallback);
+                    clientId, "updateSavingsAccount", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -381,7 +392,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "proposeTransfer", command, commandsCallback);
+                    clientId, "proposeTransfer", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -413,7 +424,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "withdrawTransfer", command, commandsCallback);
+                    clientId, "withdrawTransfer", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -445,7 +456,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "rejectTransfer", command, commandsCallback);
+                    clientId, "rejectTransfer", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -477,7 +488,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "acceptTransfer", command, commandsCallback);
+                    clientId, "acceptTransfer", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -509,7 +520,7 @@ public class RestClientService implements ClientService {
         final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
         try {
             clientService.executeCommand(this.authenticationKey, this.connectionProperties.getTenant(),
-                    clientId, "proposeAndAcceptTransfer", command, commandsCallback);
+                    clientId, "proposeAndAcceptTransfer", command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
@@ -693,22 +704,189 @@ public class RestClientService implements ClientService {
         }
     }
 
-    Callback<JsonObject> commandsCallback = new Callback<JsonObject>() {
-        @Override
-        public void success(JsonObject o, Response response) {}
-        @Override
-        public void failure(RetrofitError error) {
+    /**
+     * Uploads a client image.
+     * @param clientId the client ID
+     * @param clientImage the {@link ClientImage}
+     * @return a {@link ClientImage} with the resource ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public ClientImage uploadImage(Long clientId, ClientImage clientImage) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(clientId);
+        Preconditions.checkNotNull(clientImage);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        ClientImage responseClientImage = null;
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            String base64Data = null;
+            try {
+                ImageIO.write(clientImage.getImage(), clientImage.getType().getTypeString(),
+                    outputStream);
+                final byte[] binaryData = outputStream.toByteArray();
+                base64Data = "data:image/"+ clientImage.getType().getTypeString() +";base64," +
+                    Base64.encodeBase64String(binaryData);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            responseClientImage = clientService.uploadImage(this.authenticationKey,
+                this.connectionProperties.getTenant(), clientId, new TypedString(base64Data));
+        } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
-                throw RetrofitError.networkError(error.getUrl(), new IOException());
-            } else if (error.getKind() == RetrofitError.Kind.CONVERSION) {
-                throw RetrofitError.conversionError(error.getUrl(), error.getResponse(), null, error.getSuccessType(), new ConversionException(error.getCause()));
-            } else if (error.getKind() == RetrofitError.Kind.HTTP) {
-                throw RetrofitError.httpError(error.getUrl(), error.getResponse(), null,
-                        error.getSuccessType());
-            } else if (error.getKind() == RetrofitError.Kind.UNEXPECTED) {
-                throw RetrofitError.unexpectedError(error.getUrl(), error.getCause());
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
             }
         }
-    };
+        return responseClientImage;
+    }
+
+    /**
+     * Retrieves a client image.
+     * @param clientId the client ID
+     * @param maxWidth Optional: the maximum width of the image
+     * @param maxHeight Optional: the maximum height of the image
+     * @return a {@link ClientImage} with the image and the type if found, null otherwise
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public ClientImage findImage(Long clientId, Long maxWidth, Long maxHeight) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(clientId);
+        final RestAdapter adapter = new RestAdapter.Builder()
+            .setClient(new OkClient(new OkHttpClient()))
+            .setEndpoint(this.connectionProperties.getUrl())
+            .setConverter(new Converter() {
+                @Override
+                public Object fromBody(TypedInput body, Type type) throws ConversionException {
+                    try {
+                        Scanner s = new Scanner(body.in()).useDelimiter("\\A");
+                        return s.hasNext() ? s.next() : "";
+                    } catch (IOException e) {}
+                    return null;
+                }
+                @Override
+                public TypedOutput toBody(Object object) { return null; }
+            })
+            .build();
+        final RetrofitClientService clientService = adapter.create(RetrofitClientService.class);
+        ClientImage clientImage = null;
+        try {
+            final String responseString = clientService.findImage(this.authenticationKey,
+                this.connectionProperties.getTenant(), clientId, maxWidth, maxHeight);
+            final byte[] responseBinaryData = Base64.decodeBase64(responseString.split(",")[1]);
+            try {
+                final ByteArrayInputStream inputStream = new ByteArrayInputStream(responseBinaryData);
+                final BufferedImage image = ImageIO.read(inputStream);
+                ClientImage.Type type = null;
+                if (responseString.startsWith("data:image/png")) {
+                    type = ClientImage.Type.PNG;
+                } else if (responseString.startsWith("data:image/jpeg")) {
+                    type = ClientImage.Type.JPEG;
+                } else if (responseString.startsWith("data:image/gif")) {
+                    type = ClientImage.Type.GIF;
+                }
+                clientImage = ClientImage.image(image).type(type).build();
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_IMAGE_NOT_FOUND);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+        return clientImage;
+    }
+
+    /**
+     * Updates a client image.
+     * @param clientId the client ID
+     * @param clientImage the {@link ClientImage}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void updateImage(Long clientId, ClientImage clientImage) throws MifosXConnectException,
+        MifosXResourceException {
+        Preconditions.checkNotNull(clientId);
+        Preconditions.checkNotNull(clientImage);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            String base64Data = null;
+            try {
+                ImageIO.write(clientImage.getImage(), clientImage.getType().getTypeString(),
+                    outputStream);
+                final byte[] binaryData = outputStream.toByteArray();
+                base64Data = "data:image/" + clientImage.getType().getTypeString() + ";base64,"
+                    + Base64.encodeBase64String(binaryData);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            clientService.updateImage(this.authenticationKey,
+                this.connectionProperties.getTenant(), clientId, new TypedString(base64Data));
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Deletes a client image.
+     * @param clientId the client ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void deleteImage(Long clientId) throws MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(clientId);
+        final RetrofitClientService clientService = this.restAdapter.create(RetrofitClientService.class);
+        try {
+            clientService.deleteImage(this.authenticationKey, this.connectionProperties.getTenant(),
+                clientId);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.CLIENT_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
 
 }

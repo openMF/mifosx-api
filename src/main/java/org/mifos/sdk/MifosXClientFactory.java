@@ -21,6 +21,7 @@ import org.mifos.sdk.internal.serializers.commands.Client.ActivateClientSerializ
 import org.mifos.sdk.internal.serializers.commands.Client.CloseClientSerializer;
 import org.mifos.sdk.office.domain.Office;
 import org.mifos.sdk.staff.domain.Staff;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.GsonConverter;
@@ -51,6 +52,12 @@ public final class MifosXClientFactory {
                 .setClient(new OkClient(new OkHttpClient()))
                 .setEndpoint(properties.getUrl())
                 .setConverter(new GsonConverter(gson))
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        request.addHeader("Content-Type", "application/json");
+                    }
+                })
                 .build();
 
         return new RestMifosXClient(properties, restAdapter);
