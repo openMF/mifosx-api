@@ -27,6 +27,7 @@ public enum ErrorCode {
     CLIENT_NOT_FOUND(203, "Client not found."),
     CLIENT_OR_IDENTIFIER_NOT_FOUND(204, "Client or identifier not found."),
     CLIENT_IMAGE_NOT_FOUND(205, "Image for the given client ID does not exist."),
+    GROUP_NOT_FOUND(206, "Group not found.")
     ;
 
     private int code;
