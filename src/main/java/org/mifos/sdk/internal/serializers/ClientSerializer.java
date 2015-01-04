@@ -209,7 +209,8 @@ public class ClientSerializer implements JsonSerializer<Client>, JsonDeserialize
                 }
             }
         } catch (ParseException e) {
-            throw new IllegalStateException("There was error while deserializing the server response from the clients API endpoint.");
+            throw new IllegalStateException("There was error while deserializing the server" +
+                " response from the clients API endpoint.");
         }
 
         return client;

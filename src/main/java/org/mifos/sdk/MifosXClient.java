@@ -6,6 +6,7 @@
 package org.mifos.sdk;
 
 import org.mifos.sdk.client.ClientService;
+import org.mifos.sdk.group.GroupService;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.staff.StaffService;
 
@@ -44,5 +45,11 @@ public interface MifosXClient {
      * @throws MifosXConnectException
      */
     ClientService clientService() throws MifosXConnectException;
+
+    /**
+     * Returns an instance of {@link GroupService} to use the Groups API.
+     * @throws MifosXConnectException
+     */
+    GroupService groupService() throws MifosXConnectException;
 
 }

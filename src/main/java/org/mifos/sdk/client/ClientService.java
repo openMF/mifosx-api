@@ -5,7 +5,6 @@
  */
 package org.mifos.sdk.client;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -33,14 +32,14 @@ public interface ClientService {
 
     /**
      * Retrieves all available clients.
-     * @param queryMap an {@link ImmutableMap} with all the query parameters
+     * @param queryMap an {@link Map} with all the query parameters
      * @return a {@link PageableClients} with the list of {@link Client}s
      * @throws MifosXConnectException
      */
     PageableClients fetchClients(Map<String, Object> queryMap) throws MifosXConnectException;
 
     /**
-     * Retrieves one particular staff.
+     * Retrieves one particular client.
      * @param clientId the client ID
      * @return a {@link Client} with all the details of the searched client
      * @throws MifosXConnectException
@@ -49,7 +48,7 @@ public interface ClientService {
     Client findClient(Long clientId) throws MifosXConnectException, MifosXResourceException;
 
     /**
-     * Updates one particular staff.
+     * Updates one particular client.
      * @param clientId the client ID
      * @param client a {@link Client} object with all the changes to be made
      * @throws MifosXConnectException
@@ -63,7 +62,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void deleteClient(Long id) throws MifosXConnectException, MifosXResourceException;
+    void deleteClient(Long clientId) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Activates a pending client or results in an error if the client is already activated.

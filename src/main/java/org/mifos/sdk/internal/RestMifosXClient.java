@@ -8,6 +8,8 @@ package org.mifos.sdk.internal;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.client.ClientService;
 import org.mifos.sdk.client.internal.RestClientService;
+import org.mifos.sdk.group.GroupService;
+import org.mifos.sdk.group.internal.RestGroupService;
 import org.mifos.sdk.office.OfficeService;
 import org.mifos.sdk.office.internal.RestOfficeService;
 import org.mifos.sdk.staff.StaffService;
@@ -29,6 +31,7 @@ public class RestMifosXClient implements MifosXClient {
     private OfficeService officeService;
     private StaffService staffService;
     private ClientService clientService;
+    private GroupService groupService;
     private String authenticationKey;
     private boolean loggedIn;
 
@@ -139,6 +142,24 @@ public class RestMifosXClient implements MifosXClient {
         }
 
         return this.clientService;
+    }
+
+    /**
+     * Returns the instance of {@link GroupService} to use the Groups API.
+     * @throws MifosXConnectException
+     */
+    @Override
+    public GroupService groupService() throws MifosXConnectException {
+        if (!loggedIn) {
+            throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
+        }
+
+        if (this.groupService == null) {
+            this.groupService = new RestGroupService(this.connectionProperties,
+                this.restAdapter, this.authenticationKey);
+        }
+
+        return this.groupService;
     }
 
     /**

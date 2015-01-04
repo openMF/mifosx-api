@@ -12,11 +12,15 @@ import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.client.domain.ClientIdentifier;
 import org.mifos.sdk.client.domain.commands.ActivateClientCommand;
 import org.mifos.sdk.client.domain.commands.CloseClientCommand;
+import org.mifos.sdk.group.domain.Group;
 import org.mifos.sdk.internal.RestMifosXClient;
+import org.mifos.sdk.internal.accounts.Timeline;
 import org.mifos.sdk.internal.serializers.ClientIdentifierSerializer;
 import org.mifos.sdk.internal.serializers.ClientSerializer;
+import org.mifos.sdk.internal.serializers.GroupSerializer;
 import org.mifos.sdk.internal.serializers.OfficeSerializer;
 import org.mifos.sdk.internal.serializers.StaffSerializer;
+import org.mifos.sdk.internal.serializers.TimelineSerializer;
 import org.mifos.sdk.internal.serializers.commands.Client.ActivateClientSerializer;
 import org.mifos.sdk.internal.serializers.commands.Client.CloseClientSerializer;
 import org.mifos.sdk.office.domain.Office;
@@ -38,10 +42,12 @@ public final class MifosXClientFactory {
     public static MifosXClient get(final MifosXProperties properties) {
         final Gson gson = new GsonBuilder()
                 .serializeNulls()
+                .registerTypeAdapter(Timeline.class, new TimelineSerializer())
                 // serializers
                 .registerTypeAdapter(Office.class, new OfficeSerializer())
                 .registerTypeAdapter(Staff.class, new StaffSerializer())
                 .registerTypeAdapter(Client.class, new ClientSerializer())
+                .registerTypeAdapter(Group.class, new GroupSerializer())
                 // commands serializers
                 .registerTypeAdapter(ActivateClientCommand.class, new ActivateClientSerializer())
                 .registerTypeAdapter(CloseClientCommand.class, new CloseClientSerializer())
