@@ -16,4 +16,6 @@ public interface RestConstants {
 
     public static String QUERY_COMMAND = "command";
 
+    public static String QUERY_ROLEID = "roleId";
+
 }

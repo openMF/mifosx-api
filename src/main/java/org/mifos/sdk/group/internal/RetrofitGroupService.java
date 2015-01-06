@@ -113,4 +113,22 @@ public interface RetrofitGroupService {
                                 @Header(RestConstants.HEADER_TENANTID) String tenantId,
                                 @Path("groupId") Long groupId);
 
+    /**
+     * Executes a given command related to the Groups API.
+     * @param authenticationKey the authentication key obtained by
+     *                          calling {@link org.mifos.sdk.MifosXClient#login()}
+     * @param tenantId the tenant ID
+     * @param groupId the group ID
+     * @param command the command which is to be executed
+     * @param commandBody the command request body with all its parameters
+     * @return the server {@link retrofit.client.Response}
+     */
+    @POST("/groups/{groupId}")
+    public Response executeCommand(@Header(RestConstants.HEADER_AUTHORIZATION) String authenticationKey,
+                                   @Header(RestConstants.HEADER_TENANTID) String tenantId,
+                                   @Path("groupId") Long groupId,
+                                   @Query(RestConstants.QUERY_COMMAND) String command,
+                                   @Query(RestConstants.QUERY_ROLEID) Long roleId,
+                                   @Body Object commandBody);
+
 }

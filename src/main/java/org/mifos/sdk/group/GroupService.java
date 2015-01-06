@@ -10,6 +10,14 @@ import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.group.domain.Group;
 import org.mifos.sdk.group.domain.GroupAccountsSummary;
 import org.mifos.sdk.group.domain.PageableGroups;
+import org.mifos.sdk.group.domain.commands.ActivateGroupCommand;
+import org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand;
+import org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand;
+import org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand;
+import org.mifos.sdk.group.domain.commands.CloseGroupCommand;
+import org.mifos.sdk.group.domain.commands.GenerateCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.SaveCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.TransferClientsCommand;
 
 import java.util.List;
 import java.util.Map;
@@ -75,5 +83,126 @@ public interface GroupService {
      * @throws MifosXResourceException
      */
     void deleteGroup(Long groupId) throws MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Activates a pending group or results in an error if the group is already activated.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.ActivateGroupCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void activateGroup(Long groupId, ActivateGroupCommand command) throws MifosXConnectException,
+        MifosXResourceException;
+
+    /**
+     * Associates clients with a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void associateClients(Long groupId, AssociateDisassociateClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Disassociates clients from a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void disassociateClients(Long groupId, AssociateDisassociateClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Transfers clients from a group to another.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.TransferClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void transferClients(Long groupId, TransferClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Generates the collection sheet for the group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.GenerateCollectionSheetCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void generateCollectionSheet(Long groupId, GenerateCollectionSheetCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Saves the collection sheet of a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.SaveCollectionSheetCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void saveCollectionSheet(Long groupId, SaveCollectionSheetCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Un-assigns staff from a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void unassignStaff(Long groupId, AssignUnassignStaffCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Assigns staff to a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void assignStaff(Long groupId, AssignUnassignStaffCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Closes a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.CloseGroupCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void closeGroup(Long groupId, CloseGroupCommand command) throws MifosXConnectException,
+        MifosXResourceException;
+
+    /**
+     * Assigns a role to a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void assignRole(Long groupId, AssignUpdateRoleCommand command) throws
+        MifosXConnectException, MifosXResourceException;
+
+    /**
+     * Un-assigns a role from a group.
+     * @param groupId the group ID
+     * @param roleId the role ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void unassignRole(Long groupId, Long roleId) throws MifosXConnectException,
+        MifosXResourceException;
+
+    /**
+     * Updates an existing role of a group.
+     * @param groupId the group ID
+     * @param roleId the role ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    void updateRole(Long groupId, Long roleId, AssignUpdateRoleCommand command) throws
+        MifosXConnectException, MifosXResourceException;
 
 }
