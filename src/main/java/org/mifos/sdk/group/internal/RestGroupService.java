@@ -13,6 +13,14 @@ import org.mifos.sdk.group.GroupService;
 import org.mifos.sdk.group.domain.Group;
 import org.mifos.sdk.group.domain.GroupAccountsSummary;
 import org.mifos.sdk.group.domain.PageableGroups;
+import org.mifos.sdk.group.domain.commands.ActivateGroupCommand;
+import org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand;
+import org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand;
+import org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand;
+import org.mifos.sdk.group.domain.commands.CloseGroupCommand;
+import org.mifos.sdk.group.domain.commands.GenerateCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.SaveCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.TransferClientsCommand;
 import org.mifos.sdk.internal.ErrorCode;
 import org.mifos.sdk.internal.ServerResponseUtil;
 import retrofit.RestAdapter;
@@ -239,6 +247,392 @@ public class RestGroupService implements GroupService {
         try {
             groupService.deleteGroup(this.authenticationKey, this.connectionProperties.getTenant(),
                 groupId);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Activates a pending group or results in an error if the group is already activated.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.ActivateGroupCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void activateGroup(final Long groupId, final ActivateGroupCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "activate", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Associates clients with a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void associateClients(final Long groupId, final AssociateDisassociateClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "associateClients", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Disassociates clients from a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void disassociateClients(final Long groupId, final AssociateDisassociateClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "disassociateClients", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Transfers clients from a group to another.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.TransferClientsCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void transferClients(final Long groupId, final TransferClientsCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "transferClients", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Generates the collection sheet for the group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.GenerateCollectionSheetCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void generateCollectionSheet(final Long groupId, final GenerateCollectionSheetCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "generateCollectionSheet", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Saves the collection sheet of a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.SaveCollectionSheetCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void saveCollectionSheet(final Long groupId, final SaveCollectionSheetCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "saveCollectionSheet", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Un-assigns staff from a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void unassignStaff(final Long groupId, final AssignUnassignStaffCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "unassignStaff", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Assigns staff to a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void assignStaff(final Long groupId, final AssignUnassignStaffCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "assignStaff", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Closes a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.CloseGroupCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void closeGroup(final Long groupId, final CloseGroupCommand command) throws MifosXConnectException,
+        MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "close", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Assigns a role to a group.
+     * @param groupId the group ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void assignRole(final Long groupId, final AssignUpdateRoleCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "assignRole", null, command);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Un-assigns a role from a group.
+     * @param groupId the group ID
+     * @param roleId the role ID
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void unassignRole(final Long groupId, final Long roleId) throws MifosXConnectException,
+        MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(roleId);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "unassignRole", roleId, null);
+        } catch (RetrofitError error) {
+            if (error.getKind() == RetrofitError.Kind.NETWORK) {
+                throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);
+            } else if (error.getKind() == RetrofitError.Kind.CONVERSION ||
+                error.getResponse().getStatus() == 401) {
+                throw new MifosXConnectException(ErrorCode.INVALID_AUTHENTICATION_TOKEN);
+            } else if (error.getResponse().getStatus() == 403) {
+                final String message = ServerResponseUtil.parseResponse(error.getResponse());
+                throw new MifosXResourceException(message);
+            } else if (error.getResponse().getStatus() == 404) {
+                throw new MifosXResourceException(ErrorCode.GROUP_NOT_FOUND);
+            } else {
+                throw new MifosXConnectException(ErrorCode.UNKNOWN);
+            }
+        }
+    }
+
+    /**
+     * Updates an existing role of a group.
+     * @param groupId the group ID
+     * @param roleId the role ID
+     * @param command the {@link org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand}
+     * @throws MifosXConnectException
+     * @throws MifosXResourceException
+     */
+    public void updateRole(final Long groupId, final Long roleId, AssignUpdateRoleCommand command) throws
+        MifosXConnectException, MifosXResourceException {
+        Preconditions.checkNotNull(groupId);
+        Preconditions.checkNotNull(roleId);
+        Preconditions.checkNotNull(command);
+        final RetrofitGroupService groupService = this.restAdapter.create(RetrofitGroupService.class);
+        try {
+            groupService.executeCommand(this.authenticationKey, this.connectionProperties
+                .getTenant(), groupId, "updateRole", roleId, command);
         } catch (RetrofitError error) {
             if (error.getKind() == RetrofitError.Kind.NETWORK) {
                 throw new MifosXConnectException(ErrorCode.NOT_CONNECTED);

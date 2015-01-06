@@ -13,6 +13,14 @@ import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
 import org.mifos.sdk.group.domain.Group;
 import org.mifos.sdk.group.domain.PageableGroups;
+import org.mifos.sdk.group.domain.commands.ActivateGroupCommand;
+import org.mifos.sdk.group.domain.commands.AssignUnassignStaffCommand;
+import org.mifos.sdk.group.domain.commands.AssignUpdateRoleCommand;
+import org.mifos.sdk.group.domain.commands.AssociateDisassociateClientsCommand;
+import org.mifos.sdk.group.domain.commands.CloseGroupCommand;
+import org.mifos.sdk.group.domain.commands.GenerateCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.SaveCollectionSheetCommand;
+import org.mifos.sdk.group.domain.commands.TransferClientsCommand;
 import org.mifos.sdk.internal.ErrorCode;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
@@ -39,6 +47,7 @@ public class RestGroupServiceTest {
     private String mockedAuthKey;
     private Group defaultGroup;
     private Long defaultGroupId;
+    private Long defaultRoleId;
     private RestGroupService groupService;
     private String defaultDuplicateJSON;
     private String defaultDuplicateMessage;
@@ -63,6 +72,7 @@ public class RestGroupServiceTest {
             .active(false)
             .build();
         this.defaultGroupId = (long)1;
+        this.defaultRoleId = (long)1;
         this.groupService = new RestGroupService(this.properties, restAdapter,
             this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
@@ -719,6 +729,1489 @@ public class RestGroupServiceTest {
 
         try {
             this.groupService.deleteGroup(this.defaultGroupId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for activateGroup().
+     */
+    @Test
+    public void testActivateGroupNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "activate", null, command);
+
+        try {
+            this.groupService.activateGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for activateGroup().
+     */
+    @Test
+    public void testActivateGroupDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "activate", null, command);
+
+        try {
+            this.groupService.activateGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for activateGroup().
+     */
+    @Test
+    public void testActivateGroupInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "activate", null, command);
+
+        try {
+            this.groupService.activateGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for activateGroup().
+     */
+    @Test
+    public void testActivateGroupNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "activate", null, command);
+
+        try {
+            this.groupService.activateGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for activateGroup().
+     */
+    @Test
+    public void testActivateGroupUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "activate", null, command);
+
+        try {
+            this.groupService.activateGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for associateClients().
+     */
+    @Test
+    public void testAssociateClientsNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "associateClients", null, command);
+
+        try {
+            this.groupService.associateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for associateClients().
+     */
+    @Test
+    public void testAssociateClientsDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "associateClients", null, command);
+
+        try {
+            this.groupService.associateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for associateClients().
+     */
+    @Test
+    public void testAssociateClientsInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "associateClients", null, command);
+
+        try {
+            this.groupService.associateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for associateClients().
+     */
+    @Test
+    public void testAssociateClientsNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "associateClients", null, command);
+
+        try {
+            this.groupService.associateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for associateClients().
+     */
+    @Test
+    public void testAssociateClientsUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "associateClients", null, command);
+
+        try {
+            this.groupService.associateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for disassociateClients().
+     */
+    @Test
+    public void testDisassociateClientsNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "disassociateClients", null, command);
+
+        try {
+            this.groupService.disassociateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for disassociateClients().
+     */
+    @Test
+    public void testDisassociateClientsDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "disassociateClients", null, command);
+
+        try {
+            this.groupService.disassociateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for disassociateClients().
+     */
+    @Test
+    public void testDisassociateClientsInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "disassociateClients", null, command);
+
+        try {
+            this.groupService.disassociateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for disassociateClients().
+     */
+    @Test
+    public void testDisassociateClientsNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "disassociateClients", null, command);
+
+        try {
+            this.groupService.disassociateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for disassociateClients().
+     */
+    @Test
+    public void testDisassociateClientsUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "disassociateClients", null, command);
+
+        try {
+            this.groupService.disassociateClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for transferClients().
+     */
+    @Test
+    public void testTransferClientsNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "transferClients", null, command);
+
+        try {
+            this.groupService.transferClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for transferClients().
+     */
+    @Test
+    public void testTransferClientsDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "transferClients", null, command);
+
+        try {
+            this.groupService.transferClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for transferClients().
+     */
+    @Test
+    public void testTransferClientsInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "transferClients", null, command);
+
+        try {
+            this.groupService.transferClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for transferClients().
+     */
+    @Test
+    public void testTransferClientsNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "transferClients", null, command);
+
+        try {
+            this.groupService.transferClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for transferClients().
+     */
+    @Test
+    public void testTransferClientsUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "transferClients", null, command);
+
+        try {
+            this.groupService.transferClients(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for generateCollectionSheet().
+     */
+    @Test
+    public void testGenerateCollectionSheetNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "generateCollectionSheet", null, command);
+
+        try {
+            this.groupService.generateCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for generateCollectionSheet().
+     */
+    @Test
+    public void testGenerateCollectionSheetDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "generateCollectionSheet", null, command);
+
+        try {
+            this.groupService.generateCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for generateCollectionSheet().
+     */
+    @Test
+    public void testGenerateCollectionSheetInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "generateCollectionSheet", null, command);
+
+        try {
+            this.groupService.generateCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for generateCollectionSheet().
+     */
+    @Test
+    public void testGenerateCollectionSheetNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "generateCollectionSheet", null, command);
+
+        try {
+            this.groupService.generateCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for generateCollectionSheet().
+     */
+    @Test
+    public void testGenerateCollectionSheetUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "generateCollectionSheet", null, command);
+
+        try {
+            this.groupService.generateCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for saveCollectionSheet().
+     */
+    @Test
+    public void testSaveCollectionSheetNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "saveCollectionSheet", null, command);
+
+        try {
+            this.groupService.saveCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for saveCollectionSheet().
+     */
+    @Test
+    public void testSaveCollectionSheetDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "saveCollectionSheet", null, command);
+
+        try {
+            this.groupService.saveCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for saveCollectionSheet().
+     */
+    @Test
+    public void testSaveCollectionSheetInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "saveCollectionSheet", null, command);
+
+        try {
+            this.groupService.saveCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for saveCollectionSheet().
+     */
+    @Test
+    public void testSaveCollectionSheetNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "saveCollectionSheet", null, command);
+
+        try {
+            this.groupService.saveCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for saveCollectionSheet().
+     */
+    @Test
+    public void testSaveCollectionSheetUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "saveCollectionSheet", null, command);
+
+        try {
+            this.groupService.saveCollectionSheet(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for unassignStaff().
+     */
+    @Test
+    public void testUnassignStaffNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignStaff", null, command);
+
+        try {
+            this.groupService.unassignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for unassignStaff().
+     */
+    @Test
+    public void testUnassignStaffDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignStaff", null, command);
+
+        try {
+            this.groupService.unassignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for unassignStaff().
+     */
+    @Test
+    public void testUnassignStaffInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignStaff", null, command);
+
+        try {
+            this.groupService.unassignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for unassignStaff().
+     */
+    @Test
+    public void testUnassignStaffNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignStaff", null, command);
+
+        try {
+            this.groupService.unassignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for unassignStaff().
+     */
+    @Test
+    public void testUnassignStaffUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignStaff", null, command);
+
+        try {
+            this.groupService.unassignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for assignStaff().
+     */
+    @Test
+    public void testAssignStaffNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignStaff", null, command);
+
+        try {
+            this.groupService.assignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for assignStaff().
+     */
+    @Test
+    public void testAssignStaffDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignStaff", null, command);
+
+        try {
+            this.groupService.assignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for assignStaff().
+     */
+    @Test
+    public void testAssignStaffInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignStaff", null, command);
+
+        try {
+            this.groupService.assignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for assignStaff().
+     */
+    @Test
+    public void testAssignStaffNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignStaff", null, command);
+
+        try {
+            this.groupService.assignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for assignStaff().
+     */
+    @Test
+    public void testAssignStaffUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignStaff", null, command);
+
+        try {
+            this.groupService.assignStaff(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for closeGroup().
+     */
+    @Test
+    public void testCloseGroupNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "close", null, command);
+
+        try {
+            this.groupService.closeGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for closeGroup().
+     */
+    @Test
+    public void testCloseGroupDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "close", null, command);
+
+        try {
+            this.groupService.closeGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for closeGroup().
+     */
+    @Test
+    public void testCloseGroupInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "close", null, command);
+
+        try {
+            this.groupService.closeGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for closeGroup().
+     */
+    @Test
+    public void testCloseGroupNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "close", null, command);
+
+        try {
+            this.groupService.closeGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for closeGroup().
+     */
+    @Test
+    public void testCloseGroupUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "close", null, command);
+
+        try {
+            this.groupService.closeGroup(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for assignRole().
+     */
+    @Test
+    public void testAssignRoleNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignRole", null, command);
+
+        try {
+            this.groupService.assignRole(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for assignRole().
+     */
+    @Test
+    public void testAssignRoleDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignRole", null, command);
+
+        try {
+            this.groupService.assignRole(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for assignRole().
+     */
+    @Test
+    public void testAssignRoleInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignRole", null, command);
+
+        try {
+            this.groupService.assignRole(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for assignRole().
+     */
+    @Test
+    public void testAssignRoleNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignRole", null, command);
+
+        try {
+            this.groupService.assignRole(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for assignRole().
+     */
+    @Test
+    public void testAssignRoleUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "assignRole", null, command);
+
+        try {
+            this.groupService.assignRole(this.defaultGroupId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for updateRole().
+     */
+    @Test
+    public void testUpdateRoleNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "updateRole", this.defaultRoleId, command);
+
+        try {
+            this.groupService.updateRole(this.defaultGroupId, this.defaultRoleId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for updateRole().
+     */
+    @Test
+    public void testUpdateRoleDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "updateRole", this.defaultRoleId, command);
+
+        try {
+            this.groupService.updateRole(this.defaultGroupId, this.defaultRoleId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for updateRole().
+     */
+    @Test
+    public void testUpdateRoleInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "updateRole", this.defaultRoleId, command);
+
+        try {
+            this.groupService.updateRole(this.defaultGroupId, this.defaultRoleId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for updateRole().
+     */
+    @Test
+    public void testUpdateRoleNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "updateRole", this.defaultRoleId, command);
+
+        try {
+            this.groupService.updateRole(this.defaultGroupId, this.defaultRoleId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for updateRole().
+     */
+    @Test
+    public void testUpdateRoleUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "updateRole", this.defaultRoleId, command);
+
+        try {
+            this.groupService.updateRole(this.defaultGroupId, this.defaultRoleId, command);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.UNKNOWN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#NOT_CONNECTED} exception for unassignRole().
+     */
+    @Test
+    public void testUnassignRoleNotConnectedException() {
+        final RetrofitError error = mock(RetrofitError.class);
+
+        when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignRole", this.defaultRoleId, null);
+
+        try {
+            this.groupService.unassignRole(this.defaultGroupId, this.defaultRoleId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.NOT_CONNECTED.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for duplicate exception for unassignRole().
+     */
+    @Test
+    public void testUnassignRoleDuplicateException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignRole", this.defaultRoleId, null);
+
+        try {
+            this.groupService.unassignRole(this.defaultGroupId, this.defaultRoleId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), this.defaultDuplicateMessage);
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#INVALID_AUTHENTICATION_TOKEN} exception for unassignRole().
+     */
+    @Test
+    public void testUnassignRoleInvalidAuthKeyException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignRole", this.defaultRoleId, null);
+
+        try {
+            this.groupService.unassignRole(this.defaultGroupId, this.defaultRoleId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.INVALID_AUTHENTICATION_TOKEN.getMessage());
+        } catch (MifosXResourceException e) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test for not found exception for unassignRole().
+     */
+    @Test
+    public void testUnassignRoleNotFoundException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignRole", this.defaultRoleId, null);
+
+        try {
+            this.groupService.unassignRole(this.defaultGroupId, this.defaultRoleId);
+
+            Assert.fail();
+        } catch (MifosXConnectException e) {
+            Assert.fail();
+        } catch (MifosXResourceException e) {
+            Assert.assertNotNull(e);
+            Assert.assertEquals(e.getMessage(), ErrorCode.GROUP_NOT_FOUND.getMessage());
+        }
+    }
+
+    /**
+     * Test for {@link ErrorCode#UNKNOWN} exception for unassignRole().
+     */
+    @Test
+    public void testUnassignRoleUnknownException() {
+        final RetrofitError error = mock(RetrofitError.class);
+        final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
+
+        when(error.getResponse()).thenReturn(response);
+        doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
+            this.properties.getTenant(), this.defaultGroupId, "unassignRole", this.defaultRoleId, null);
+
+        try {
+            this.groupService.unassignRole(this.defaultGroupId, this.defaultRoleId);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
