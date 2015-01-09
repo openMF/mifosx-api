@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Used for handling 'generate client sheet' of the group command.
  */
-public class GenerateCollectionSheetCommand {
+public final class GenerateCollectionSheetCommand {
 
     /**
      * Utility class to ease the process of building a

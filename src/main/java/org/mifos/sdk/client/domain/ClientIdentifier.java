@@ -8,7 +8,7 @@ package org.mifos.sdk.client.domain;
 /**
  * Gives an interface to communicate with identifiers for Client API.
  */
-public class ClientIdentifier {
+public final class ClientIdentifier {
 
     /**
      * Utility class to ease the process of building a

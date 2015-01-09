@@ -11,7 +11,7 @@ import org.mifos.sdk.internal.ErrorCode;
 /**
  * Used for all resources related exception handling.
  */
-public class MifosXResourceException extends Exception {
+public final class MifosXResourceException extends Exception {
 
     private ErrorCode errorCode;
     private String errorMessage;

@@ -23,7 +23,7 @@ public interface StaffService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Staff createStaff(Staff staff) throws MifosXConnectException, MifosXResourceException;
+    Staff createStaff(final Staff staff) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves all the available staff.
@@ -39,7 +39,7 @@ public interface StaffService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Staff findStaff(Long id) throws MifosXConnectException, MifosXResourceException;
+    Staff findStaff(final Long id) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves all staff by their status.
@@ -48,7 +48,7 @@ public interface StaffService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    List<Staff> findStaffByStatus(String status) throws MifosXConnectException,
+    List<Staff> findStaffByStatus(final String status) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -58,6 +58,7 @@ public interface StaffService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateStaff(Long id, Staff staff) throws MifosXConnectException, MifosXResourceException;
+    void updateStaff(final Long id, final Staff staff) throws MifosXConnectException,
+        MifosXResourceException;
 
 }

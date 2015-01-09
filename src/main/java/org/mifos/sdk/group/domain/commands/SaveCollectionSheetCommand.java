@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Used for handling 'save collection sheet' of the group command.
  */
-public class SaveCollectionSheetCommand {
+public final class SaveCollectionSheetCommand {
 
     /**
      * Utility class to ease the process of building a

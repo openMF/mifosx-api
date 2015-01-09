@@ -5,7 +5,12 @@
  */
 package org.mifos.sdk.internal.serializers;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.mifos.sdk.internal.ParseUtil;
 import org.mifos.sdk.staff.domain.Staff;
 
@@ -19,7 +24,7 @@ public class StaffSerializer implements JsonSerializer<Staff>, JsonDeserializer<
 
     @Override
     public JsonElement serialize(final Staff src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject jsonObject = new JsonObject();
+        final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("officeId", src.getOfficeId());
 
         if (src.getFirstname() == null || src.getLastname() == null) {
@@ -40,17 +45,21 @@ public class StaffSerializer implements JsonSerializer<Staff>, JsonDeserializer<
             }
 
             jsonObject.addProperty("externalId", src.getExternalId());
-        } else if (src.getMobileNo() != null) {
+        }
+        if (src.getMobileNo() != null) {
             if (src.getMobileNo().isEmpty()) {
                 throw new IllegalArgumentException("Staff mobile number cannot be empty!");
             }
 
             jsonObject.addProperty("mobileNo", src.getMobileNo());
-        } else if (src.getIsActive()) {
+        }
+        if (src.getIsActive()) {
             jsonObject.addProperty("isActive", src.getIsActive());
-        } else if (src.getIsLoanOfficer()) {
+        }
+        if (src.getIsLoanOfficer()) {
             jsonObject.addProperty("isLoanOfficer", src.getIsLoanOfficer());
-        } else if (src.getJoiningDate() != null) {
+        }
+        if (src.getJoiningDate() != null) {
             if (src.getLocale() == null || src.getDateFormat() == null ||
                     src.getDateFormat().isEmpty() || src.getLocale().isEmpty()) {
                 throw new IllegalArgumentException("Staff locale and date format is required " +
@@ -60,7 +69,7 @@ public class StaffSerializer implements JsonSerializer<Staff>, JsonDeserializer<
             jsonObject.addProperty("locale", src.getLocale());
             jsonObject.addProperty("dateFormat", src.getDateFormat());
             jsonObject.addProperty("joiningDate", ParseUtil.parseDateToString(src.getJoiningDate(),
-                    src.getDateFormat(), src.getLocale()));
+                src.getDateFormat(), src.getLocale()));
         }
 
         return jsonObject;
@@ -72,13 +81,8 @@ public class StaffSerializer implements JsonSerializer<Staff>, JsonDeserializer<
         final JsonObject jsonObject = json.getAsJsonObject();
 
         try {
-            String idParam = null;
-            if (jsonObject.get("officeId").isJsonNull()) {
-                idParam = "id";
-            } else {
-                idParam = "officeId";
-            }
-            staff = Staff.officeId(jsonObject.get(idParam).getAsLong())
+            staff = Staff.officeId(jsonObject.has("officeId") ? jsonObject.get("officeId")
+                            .getAsLong() : null)
                     .externalId(jsonObject.has("externalId") ? jsonObject
                             .get("externalId").getAsString() : null)
                     .firstname(jsonObject.has("firstname") ? jsonObject.get("firstname")
@@ -97,8 +101,11 @@ public class StaffSerializer implements JsonSerializer<Staff>, JsonDeserializer<
 
             staff.setDisplayName(jsonObject.has("displayName") ? jsonObject
                     .get("displayName").getAsString() : null);
-            staff.setResourceId(jsonObject.has("resourceId") ? jsonObject
-                    .get("resourceId").getAsLong() : null);
+            if (jsonObject.has("resourceId")) {
+                staff.setResourceId(jsonObject.get("resourceId").getAsLong());
+            } else if (jsonObject.has("id")) {
+                staff.setResourceId(jsonObject.get("id").getAsLong());
+            }
             staff.setOfficeName(jsonObject.has("officeName") ? jsonObject
                     .get("officeName").getAsString() : null);
         } catch (ParseException e) {

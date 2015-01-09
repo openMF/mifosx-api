@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'assign and unassign staff' of the group command.
  */
-public class AssignUnassignStaffCommand {
+public final class AssignUnassignStaffCommand {
 
     /**
      * Utility class to ease the process of building a

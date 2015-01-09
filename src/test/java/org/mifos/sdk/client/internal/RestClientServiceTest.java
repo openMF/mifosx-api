@@ -49,6 +49,7 @@ public class RestClientServiceTest {
     private String defaultDuplicateJSON;
     private String defaultDuplicateMessage;
     private ClientIdentifier clientIdentifier;
+    private ClientImage clientImage;
     private Long defaultIdentifierId;
     private BufferedImage defaultImage;
     private TypedString defaultBase64Data;
@@ -69,17 +70,19 @@ public class RestClientServiceTest {
         this.mockedAuthKey = "=hd$$34dd";
         this.defaultClient = Client
                 .fullname("Davis Jones")
-                .officeId((long)1)
+                .officeId(1L)
                 .active(false)
                 .build();
-        this.defaultClientId = (long)1;
+        this.defaultClientId = 1L;
+        this.defaultClient.setClientId(this.defaultClientId);
         this.clientService = new RestClientService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
         this.defaultDuplicateJSON = "{\"errors\":[{\"developerMessage\":\"some random message\"}]}";
         this.defaultDuplicateMessage = "some random message";
-        this.clientIdentifier = mock(ClientIdentifier.class);
-        this.defaultIdentifierId = (long)1;
+        this.clientIdentifier = ClientIdentifier.documentKey("dummy").build();
+        this.defaultIdentifierId = 1L;
+        this.clientIdentifier.setClientId(this.defaultClientId);
         this.defaultImage = ImageIO.read(RestClientServiceTest.class.getResource("/profile_pic.png"));
 
         // generate the Data URI for the default image
@@ -87,6 +90,9 @@ public class RestClientServiceTest {
         ImageIO.write(this.defaultImage, "png", outputStream);
         final byte[] binaryData = outputStream.toByteArray();
         this.defaultBase64Data = new TypedString("data:image/png;base64," + Base64.encodeBase64String(binaryData));
+
+        this.clientImage = ClientImage.image(this.defaultImage).type(ClientImage.Type.PNG).build();
+        this.clientImage.setResourceId(this.defaultClientId);
 
         when(restAdapter.create(RetrofitClientService.class)).thenReturn(this.retrofitClientService);
     }
@@ -96,14 +102,11 @@ public class RestClientServiceTest {
      */
     @Test
     public void testCreateClient() {
-        final Client mockedClient = mock(Client.class);
-
-        when(mockedClient.getClientId()).thenReturn(this.defaultClientId);
         when(this.retrofitClientService.createClient(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultClient)).thenReturn(mockedClient);
+                this.defaultClient)).thenReturn(this.defaultClient);
 
         try {
-            Long id = this.clientService.createClient(this.defaultClient).getClientId();
+            final Long id = this.clientService.createClient(this.defaultClient).getClientId();
 
             Assert.assertNotNull(id);
             Assert.assertEquals(id, this.defaultClientId);
@@ -239,11 +242,11 @@ public class RestClientServiceTest {
     @Test
     public void testFetchClients() {
         final List<Client> clientsList = Arrays.asList(this.defaultClient, this.defaultClient);
-        final PageableClients pageableClients = mock(PageableClients.class);
+        final PageableClients pageableClients = new PageableClients();
+        pageableClients.setClients(clientsList);
 
         when(this.retrofitClientService.fetchClients(this.mockedAuthKey,
                 this.properties.getTenant(), null)).thenReturn(pageableClients);
-        when(pageableClients.getClients()).thenReturn(clientsList);
 
         try {
             final List<Client> responseClients = this.clientService.fetchClients(null).getClients();
@@ -747,7 +750,7 @@ public class RestClientServiceTest {
     @Test
     public void testActivateClientNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ActivateClientCommand command = mock(ActivateClientCommand.class);
+        final ActivateClientCommand command = ActivateClientCommand.locale("en").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -772,7 +775,7 @@ public class RestClientServiceTest {
     public void testActivateClientDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final ActivateClientCommand command = mock(ActivateClientCommand.class);
+        final ActivateClientCommand command = ActivateClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -797,7 +800,7 @@ public class RestClientServiceTest {
     public void testActivateClientInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateClientCommand command = mock(ActivateClientCommand.class);
+        final ActivateClientCommand command = ActivateClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -822,7 +825,7 @@ public class RestClientServiceTest {
     public void testActivateClientNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateClientCommand command = mock(ActivateClientCommand.class);
+        final ActivateClientCommand command = ActivateClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -847,7 +850,7 @@ public class RestClientServiceTest {
     public void testActivateClientUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateClientCommand command = mock(ActivateClientCommand.class);
+        final ActivateClientCommand command = ActivateClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -871,7 +874,7 @@ public class RestClientServiceTest {
     @Test
     public void testCloseClientNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final CloseClientCommand command = mock(CloseClientCommand.class);
+        final CloseClientCommand command = CloseClientCommand.locale("en").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -896,7 +899,7 @@ public class RestClientServiceTest {
     public void testCloseClientDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final CloseClientCommand command = mock(CloseClientCommand.class);
+        final CloseClientCommand command = CloseClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -921,7 +924,7 @@ public class RestClientServiceTest {
     public void testCloseClientInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseClientCommand command = mock(CloseClientCommand.class);
+        final CloseClientCommand command = CloseClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -946,7 +949,7 @@ public class RestClientServiceTest {
     public void testCloseClientNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseClientCommand command = mock(CloseClientCommand.class);
+        final CloseClientCommand command = CloseClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -971,7 +974,7 @@ public class RestClientServiceTest {
     public void testCloseClientUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseClientCommand command = mock(CloseClientCommand.class);
+        final CloseClientCommand command = CloseClientCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -995,7 +998,7 @@ public class RestClientServiceTest {
     @Test
     public void testAssignStaffNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1020,7 +1023,7 @@ public class RestClientServiceTest {
     public void testAssignStaffDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1045,7 +1048,7 @@ public class RestClientServiceTest {
     public void testAssignStaffInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1070,7 +1073,7 @@ public class RestClientServiceTest {
     public void testAssignStaffNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1095,7 +1098,7 @@ public class RestClientServiceTest {
     public void testAssignStaffUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1119,7 +1122,7 @@ public class RestClientServiceTest {
     @Test
     public void testUnassignStaffNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1144,7 +1147,7 @@ public class RestClientServiceTest {
     public void testUnassignStaffDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1169,7 +1172,7 @@ public class RestClientServiceTest {
     public void testUnassignStaffInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1194,7 +1197,7 @@ public class RestClientServiceTest {
     public void testUnassignStaffNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1219,7 +1222,7 @@ public class RestClientServiceTest {
     public void testUnassignStaffUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1243,7 +1246,7 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateSavingsAccountNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final UpdateSavingsAccountCommand command = mock(UpdateSavingsAccountCommand.class);
+        final UpdateSavingsAccountCommand command = UpdateSavingsAccountCommand.savingsAccountId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1268,7 +1271,7 @@ public class RestClientServiceTest {
     public void testUpdateSavingsAccountDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final UpdateSavingsAccountCommand command = mock(UpdateSavingsAccountCommand.class);
+        final UpdateSavingsAccountCommand command = UpdateSavingsAccountCommand.savingsAccountId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1293,7 +1296,7 @@ public class RestClientServiceTest {
     public void testUpdateSavingsAccountInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final UpdateSavingsAccountCommand command = mock(UpdateSavingsAccountCommand.class);
+        final UpdateSavingsAccountCommand command = UpdateSavingsAccountCommand.savingsAccountId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1318,7 +1321,7 @@ public class RestClientServiceTest {
     public void testUpdateSavingsAccountNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final UpdateSavingsAccountCommand command = mock(UpdateSavingsAccountCommand.class);
+        final UpdateSavingsAccountCommand command = UpdateSavingsAccountCommand.savingsAccountId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1343,7 +1346,7 @@ public class RestClientServiceTest {
     public void testUpdateSavingsAccountUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final UpdateSavingsAccountCommand command = mock(UpdateSavingsAccountCommand.class);
+        final UpdateSavingsAccountCommand command = UpdateSavingsAccountCommand.savingsAccountId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1367,7 +1370,7 @@ public class RestClientServiceTest {
     @Test
     public void testProposeTransferNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ProposeClientTransferCommand command = mock(ProposeClientTransferCommand.class);
+        final ProposeClientTransferCommand command = ProposeClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1392,7 +1395,7 @@ public class RestClientServiceTest {
     public void testProposeTransferDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final ProposeClientTransferCommand command = mock(ProposeClientTransferCommand.class);
+        final ProposeClientTransferCommand command = ProposeClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1417,7 +1420,7 @@ public class RestClientServiceTest {
     public void testProposeTransferInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeClientTransferCommand command = mock(ProposeClientTransferCommand.class);
+        final ProposeClientTransferCommand command = ProposeClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1442,7 +1445,7 @@ public class RestClientServiceTest {
     public void testProposeTransferNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeClientTransferCommand command = mock(ProposeClientTransferCommand.class);
+        final ProposeClientTransferCommand command = ProposeClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1467,7 +1470,7 @@ public class RestClientServiceTest {
     public void testProposeTransferUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeClientTransferCommand command = mock(ProposeClientTransferCommand.class);
+        final ProposeClientTransferCommand command = ProposeClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1491,7 +1494,7 @@ public class RestClientServiceTest {
     @Test
     public void testWithdrawTransferNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1516,7 +1519,7 @@ public class RestClientServiceTest {
     public void testWithdrawTransferDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1541,7 +1544,7 @@ public class RestClientServiceTest {
     public void testWithdrawTransferInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1566,7 +1569,7 @@ public class RestClientServiceTest {
     public void testWithdrawTransferNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1591,7 +1594,7 @@ public class RestClientServiceTest {
     public void testWithdrawTransferUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1615,7 +1618,7 @@ public class RestClientServiceTest {
     @Test
     public void testRejectTransferNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1640,7 +1643,7 @@ public class RestClientServiceTest {
     public void testRejectTransferDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1665,7 +1668,7 @@ public class RestClientServiceTest {
     public void testRejectTransferInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1690,7 +1693,7 @@ public class RestClientServiceTest {
     public void testRejectTransferNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1715,7 +1718,7 @@ public class RestClientServiceTest {
     public void testRejectTransferUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final WithdrawRejectClientTransferCommand command = mock(WithdrawRejectClientTransferCommand.class);
+        final WithdrawRejectClientTransferCommand command = WithdrawRejectClientTransferCommand.note("dummy").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1739,7 +1742,7 @@ public class RestClientServiceTest {
     @Test
     public void testAcceptTransferNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AcceptClientTransferCommand command = mock(AcceptClientTransferCommand.class);
+        final AcceptClientTransferCommand command = AcceptClientTransferCommand.destinationGroupId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1764,7 +1767,7 @@ public class RestClientServiceTest {
     public void testAcceptTransferDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AcceptClientTransferCommand command = mock(AcceptClientTransferCommand.class);
+        final AcceptClientTransferCommand command = AcceptClientTransferCommand.destinationGroupId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1789,7 +1792,7 @@ public class RestClientServiceTest {
     public void testAcceptTransferInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AcceptClientTransferCommand command = mock(AcceptClientTransferCommand.class);
+        final AcceptClientTransferCommand command = AcceptClientTransferCommand.destinationGroupId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1814,7 +1817,7 @@ public class RestClientServiceTest {
     public void testAcceptTransferNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AcceptClientTransferCommand command = mock(AcceptClientTransferCommand.class);
+        final AcceptClientTransferCommand command = AcceptClientTransferCommand.destinationGroupId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1839,7 +1842,7 @@ public class RestClientServiceTest {
     public void testAcceptTransferUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AcceptClientTransferCommand command = mock(AcceptClientTransferCommand.class);
+        final AcceptClientTransferCommand command = AcceptClientTransferCommand.destinationGroupId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1863,7 +1866,7 @@ public class RestClientServiceTest {
     @Test
     public void testProposeAndAcceptTransferNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ProposeAndAcceptClientTransferCommand command = mock(ProposeAndAcceptClientTransferCommand.class);
+        final ProposeAndAcceptClientTransferCommand command = ProposeAndAcceptClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1888,7 +1891,7 @@ public class RestClientServiceTest {
     public void testProposeAndAcceptTransferDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final ProposeAndAcceptClientTransferCommand command = mock(ProposeAndAcceptClientTransferCommand.class);
+        final ProposeAndAcceptClientTransferCommand command = ProposeAndAcceptClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1913,7 +1916,7 @@ public class RestClientServiceTest {
     public void testProposeAndAcceptTransferInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeAndAcceptClientTransferCommand command = mock(ProposeAndAcceptClientTransferCommand.class);
+        final ProposeAndAcceptClientTransferCommand command = ProposeAndAcceptClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1938,7 +1941,7 @@ public class RestClientServiceTest {
     public void testProposeAndAcceptTransferNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeAndAcceptClientTransferCommand command = mock(ProposeAndAcceptClientTransferCommand.class);
+        final ProposeAndAcceptClientTransferCommand command = ProposeAndAcceptClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1963,7 +1966,7 @@ public class RestClientServiceTest {
     public void testProposeAndAcceptTransferUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final ProposeAndAcceptClientTransferCommand command = mock(ProposeAndAcceptClientTransferCommand.class);
+        final ProposeAndAcceptClientTransferCommand command = ProposeAndAcceptClientTransferCommand.destinationOfficeId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitClientService).executeCommand(this.mockedAuthKey,
@@ -1986,11 +1989,8 @@ public class RestClientServiceTest {
      */
     @Test
     public void testCreateIdentifier() {
-        final ClientIdentifier mockedClientIdentifier = mock(ClientIdentifier.class);
-
-        when(mockedClientIdentifier.getClientId()).thenReturn(this.defaultClientId);
         when(this.retrofitClientService.createIdentifier(this.mockedAuthKey, this.properties.getTenant(),
-            this.defaultClientId, this.clientIdentifier)).thenReturn(mockedClientIdentifier);
+            this.defaultClientId, this.clientIdentifier)).thenReturn(this.clientIdentifier);
 
         try {
             final Long id = this.clientService.createIdentifier(this.defaultClientId,
@@ -2681,16 +2681,11 @@ public class RestClientServiceTest {
      */
     @Test
     public void testUploadClientImage() {
-        final ClientImage clientImage = mock(ClientImage.class);
-
         when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
-            this.defaultClientId, this.defaultBase64Data)).thenReturn(clientImage);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
-        when(clientImage.getResourceId()).thenReturn(this.defaultClientId);
+            this.defaultClientId, this.defaultBase64Data)).thenReturn(this.clientImage);
 
         try {
-            Long id = this.clientService.uploadImage(this.defaultClientId, clientImage).getResourceId();
+            Long id = this.clientService.uploadImage(this.defaultClientId, this.clientImage).getResourceId();
 
             Assert.assertNotNull(id);
             Assert.assertEquals(id, this.defaultClientId);
@@ -2707,16 +2702,13 @@ public class RestClientServiceTest {
     @Test
     public void testUploadClientImageNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
 
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
             this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
 
         try {
-            this.clientService.uploadImage(this.defaultClientId, clientImage);
+            this.clientService.uploadImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2733,10 +2725,6 @@ public class RestClientServiceTest {
     @Test
     public void testUploadClientImageDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
-
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         final Response response = new Response("", 403, "", new ArrayList<Header>(),
             new TypedString(this.defaultDuplicateJSON));
 
@@ -2745,7 +2733,7 @@ public class RestClientServiceTest {
             this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
 
         try {
-            this.clientService.uploadImage(this.defaultClientId, clientImage);
+            this.clientService.uploadImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2762,16 +2750,13 @@ public class RestClientServiceTest {
     @Test
     public void testUploadClientImageConversionException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
 
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         when(error.getKind()).thenReturn(RetrofitError.Kind.CONVERSION);
         when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
             this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
 
         try {
-            this.clientService.uploadImage(this.defaultClientId, clientImage);
+            this.clientService.uploadImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2788,17 +2773,14 @@ public class RestClientServiceTest {
     @Test
     public void testUploadClientImageInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         when(error.getResponse()).thenReturn(response);
         when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
             this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
 
         try {
-            this.clientService.uploadImage(this.defaultClientId, clientImage);
+            this.clientService.uploadImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2815,17 +2797,14 @@ public class RestClientServiceTest {
     @Test
     public void testUploadClientImageUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
 
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         when(error.getResponse()).thenReturn(response);
         when(this.retrofitClientService.uploadImage(this.mockedAuthKey, this.properties.getTenant(),
             this.defaultClientId, this.defaultBase64Data)).thenThrow(error);
 
         try {
-            this.clientService.uploadImage(this.defaultClientId, clientImage);
+            this.clientService.uploadImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2842,16 +2821,13 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateClientImageNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
 
         try {
-            this.clientService.updateImage(this.defaultClientId, clientImage);
+            this.clientService.updateImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2868,17 +2844,14 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateClientImageDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
 
         when(error.getResponse()).thenReturn(response);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
 
         try {
-            this.clientService.updateImage(this.defaultClientId, clientImage);
+            this.clientService.updateImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2895,17 +2868,14 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateClientImageInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
 
         try {
-            this.clientService.updateImage(this.defaultClientId, clientImage);
+            this.clientService.updateImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2922,17 +2892,14 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateClientImageNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
 
         try {
-            this.clientService.updateImage(this.defaultClientId, clientImage);
+            this.clientService.updateImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {
@@ -2949,17 +2916,14 @@ public class RestClientServiceTest {
     @Test
     public void testUpdateClientImageUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ClientImage clientImage = mock(ClientImage.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
 
         when(error.getResponse()).thenReturn(response);
-        when(clientImage.getImage()).thenReturn(this.defaultImage);
-        when(clientImage.getType()).thenReturn(ClientImage.Type.PNG);
         doThrow(error).when(this.retrofitClientService).updateImage(this.mockedAuthKey,
             this.properties.getTenant(), this.defaultClientId, this.defaultBase64Data);
 
         try {
-            this.clientService.updateImage(this.defaultClientId, clientImage);
+            this.clientService.updateImage(this.defaultClientId, this.clientImage);
 
             Assert.fail();
         } catch (MifosXConnectException e) {

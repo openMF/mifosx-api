@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Holds loan type information.
  */
-public class LoanType {
+public final class LoanType {
 
     private Long id;
     private String code;

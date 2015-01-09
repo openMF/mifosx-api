@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 /**
  * Gives an interface to communicate with images for Client API.
  */
-public class ClientImage {
+public final class ClientImage {
 
     /**
      * Enum to hold allowed image types.
@@ -104,6 +104,16 @@ public class ClientImage {
      */
     public Long getResourceId() {
         return this.resourceId;
+    }
+
+    /**
+     * Sets the resource ID of the image.
+     * @param id the resource ID
+     */
+    public void setResourceId(final Long id) {
+        Preconditions.checkNotNull(id);
+
+        this.resourceId = id;
     }
 
     /**

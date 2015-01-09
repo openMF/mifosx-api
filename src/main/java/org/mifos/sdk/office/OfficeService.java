@@ -23,7 +23,7 @@ public interface OfficeService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Long createOffice(Office office) throws MifosXConnectException, MifosXResourceException;
+    Long createOffice(final Office office) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves the list of all available offices.
@@ -39,7 +39,7 @@ public interface OfficeService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Office findOffice(Long id) throws MifosXConnectException, MifosXResourceException;
+    Office findOffice(final Long id) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Updates a particular office.
@@ -47,6 +47,7 @@ public interface OfficeService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateOffice(Long id, Office office) throws MifosXConnectException, MifosXResourceException;
+    void updateOffice(final Long id, final Office office) throws MifosXConnectException,
+        MifosXResourceException;
 
 }

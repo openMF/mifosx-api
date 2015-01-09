@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Holds information related to the timeline of an entity.
  */
-public class Timeline {
+public final class Timeline {
 
     private List<Event> events;
 

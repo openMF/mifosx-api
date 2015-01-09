@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Used for handling 'closing' of the client command.
  */
-public class CloseClientCommand {
+public final class CloseClientCommand {
 
     /**
      * Utility class to ease the process of building a

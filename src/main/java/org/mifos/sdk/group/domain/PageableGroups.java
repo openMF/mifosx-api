@@ -5,12 +5,14 @@
  */
 package org.mifos.sdk.group.domain;
 
+import com.google.common.base.Preconditions;
+
 import java.util.List;
 
 /**
  * Container for the list of groups and total filtered records.
  */
-public class PageableGroups {
+public final class PageableGroups {
 
     private Long totalFilteredRecords;
     private List<Group> pageItems;
@@ -23,10 +25,30 @@ public class PageableGroups {
     }
 
     /**
+     * Sets the total number of filtered records.
+     * @param totalFilteredRecords the number of filtered records
+     */
+    public void setTotalFilteredRecords(final Long totalFilteredRecords) {
+        Preconditions.checkNotNull(totalFilteredRecords);
+
+        this.totalFilteredRecords = totalFilteredRecords;
+    }
+
+    /**
      * Returns the list of groups.
      */
     public List<Group> getGroups() {
         return this.pageItems;
+    }
+
+    /**
+     * Sets the list of groups.
+     * @param groups the group list
+     */
+    public void setClients(final List<Group> groups) {
+        Preconditions.checkNotNull(groups);
+
+        this.pageItems = groups;
     }
 
 }

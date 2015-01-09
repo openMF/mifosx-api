@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mifos.sdk.MifosXConnectException;
 import org.mifos.sdk.MifosXProperties;
 import org.mifos.sdk.MifosXResourceException;
+import org.mifos.sdk.client.domain.Client;
 import org.mifos.sdk.group.domain.Group;
 import org.mifos.sdk.group.domain.PageableGroups;
 import org.mifos.sdk.group.domain.commands.ActivateGroupCommand;
@@ -30,6 +31,8 @@ import retrofit.mime.TypedString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,11 +71,12 @@ public class RestGroupServiceTest {
         this.mockedAuthKey = "=hd$$34dd";
         this.defaultGroup = Group
             .name("Test Group")
-            .officeId((long)1)
+            .officeId(1L)
             .active(false)
             .build();
-        this.defaultGroupId = (long)1;
-        this.defaultRoleId = (long)1;
+        this.defaultGroupId = 1L;
+        this.defaultGroup.setResourceId(this.defaultGroupId);
+        this.defaultRoleId = 1L;
         this.groupService = new RestGroupService(this.properties, restAdapter,
             this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
@@ -87,10 +91,7 @@ public class RestGroupServiceTest {
      */
     @Test
     public void testCreateGroup() {
-        final Group mockedGroup = mock(Group.class);
-
-        when(mockedGroup.getResourceId()).thenReturn(this.defaultGroupId);
-        when(this.retrofitGroupService.createGroup(this.mockedAuthKey, this.properties.getTenant(), this.defaultGroup)).thenReturn(mockedGroup);
+        when(this.retrofitGroupService.createGroup(this.mockedAuthKey, this.properties.getTenant(), this.defaultGroup)).thenReturn(this.defaultGroup);
 
         try {
             Long id = this.groupService.createGroup(this.defaultGroup).getResourceId();
@@ -226,14 +227,14 @@ public class RestGroupServiceTest {
      */
     @Test
     public void testFetchGroups() {
-        final PageableGroups mockedPageableGroups = mock(PageableGroups.class);
         final List<Group> groupsList = Arrays.asList(this.defaultGroup, this.defaultGroup);
+        final PageableGroups pageableGroups = new PageableGroups();
+        pageableGroups.setClients(groupsList);
         final Map<String, Object> map = new HashMap<>();
         map.put("paged", true);
 
-        when(mockedPageableGroups.getGroups()).thenReturn(groupsList);
         when(this.retrofitGroupService.fetchGroups(this.mockedAuthKey,
-            this.properties.getTenant(), map)).thenReturn(mockedPageableGroups);
+            this.properties.getTenant(), map)).thenReturn(pageableGroups);
 
         try {
             final List<Group> responseGroups = this.groupService.fetchGroups(null).getGroups();
@@ -745,7 +746,7 @@ public class RestGroupServiceTest {
     @Test
     public void testActivateGroupNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+        final ActivateGroupCommand command = ActivateGroupCommand.locale("en").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -770,7 +771,7 @@ public class RestGroupServiceTest {
     public void testActivateGroupDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+        final ActivateGroupCommand command = ActivateGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -795,7 +796,7 @@ public class RestGroupServiceTest {
     public void testActivateGroupInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+        final ActivateGroupCommand command = ActivateGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -820,7 +821,7 @@ public class RestGroupServiceTest {
     public void testActivateGroupNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+        final ActivateGroupCommand command = ActivateGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -845,7 +846,7 @@ public class RestGroupServiceTest {
     public void testActivateGroupUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final ActivateGroupCommand command = mock(ActivateGroupCommand.class);
+        final ActivateGroupCommand command = ActivateGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -869,7 +870,8 @@ public class RestGroupServiceTest {
     @Test
     public void testAssociateClientsNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -894,7 +896,8 @@ public class RestGroupServiceTest {
     public void testAssociateClientsDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -919,7 +922,8 @@ public class RestGroupServiceTest {
     public void testAssociateClientsInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -944,7 +948,8 @@ public class RestGroupServiceTest {
     public void testAssociateClientsNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -969,7 +974,8 @@ public class RestGroupServiceTest {
     public void testAssociateClientsUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -993,7 +999,8 @@ public class RestGroupServiceTest {
     @Test
     public void testDisassociateClientsNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1018,7 +1025,8 @@ public class RestGroupServiceTest {
     public void testDisassociateClientsDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1043,7 +1051,8 @@ public class RestGroupServiceTest {
     public void testDisassociateClientsInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1068,7 +1077,8 @@ public class RestGroupServiceTest {
     public void testDisassociateClientsNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1093,7 +1103,8 @@ public class RestGroupServiceTest {
     public void testDisassociateClientsUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssociateDisassociateClientsCommand command = mock(AssociateDisassociateClientsCommand.class);
+        final AssociateDisassociateClientsCommand command = AssociateDisassociateClientsCommand.clientMembers(Arrays
+            .asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1117,7 +1128,8 @@ public class RestGroupServiceTest {
     @Test
     public void testTransferClientsNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+        final TransferClientsCommand command = TransferClientsCommand.destinationGroupId(1L)
+            .clients(Arrays.asList(1L, 2L, 3L)).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1142,7 +1154,8 @@ public class RestGroupServiceTest {
     public void testTransferClientsDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+        final TransferClientsCommand command = TransferClientsCommand.destinationGroupId(1L)
+            .clients(Arrays.asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1167,7 +1180,8 @@ public class RestGroupServiceTest {
     public void testTransferClientsInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+        final TransferClientsCommand command = TransferClientsCommand.destinationGroupId(1L)
+            .clients(Arrays.asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1192,7 +1206,8 @@ public class RestGroupServiceTest {
     public void testTransferClientsNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+        final TransferClientsCommand command = TransferClientsCommand.destinationGroupId(1L)
+            .clients(Arrays.asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1217,7 +1232,8 @@ public class RestGroupServiceTest {
     public void testTransferClientsUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final TransferClientsCommand command = mock(TransferClientsCommand.class);
+        final TransferClientsCommand command = TransferClientsCommand.destinationGroupId(1L)
+            .clients(Arrays.asList(1L, 2L, 3L)).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1241,7 +1257,9 @@ public class RestGroupServiceTest {
     @Test
     public void testGenerateCollectionSheetNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final GenerateCollectionSheetCommand command = GenerateCollectionSheetCommand.locale("en")
+            .calendarId(1L).dateFormat("dd/MM/yyyy").transactionDate(date).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1266,7 +1284,9 @@ public class RestGroupServiceTest {
     public void testGenerateCollectionSheetDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final GenerateCollectionSheetCommand command = GenerateCollectionSheetCommand.locale("en")
+            .calendarId(1L).dateFormat("dd/MM/yyyy").transactionDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1291,7 +1311,9 @@ public class RestGroupServiceTest {
     public void testGenerateCollectionSheetInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final GenerateCollectionSheetCommand command = GenerateCollectionSheetCommand.locale("en")
+            .calendarId(1L).dateFormat("dd/MM/yyyy").transactionDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1316,7 +1338,9 @@ public class RestGroupServiceTest {
     public void testGenerateCollectionSheetNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final GenerateCollectionSheetCommand command = GenerateCollectionSheetCommand.locale("en")
+            .calendarId(1L).dateFormat("dd/MM/yyyy").transactionDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1341,7 +1365,9 @@ public class RestGroupServiceTest {
     public void testGenerateCollectionSheetUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final GenerateCollectionSheetCommand command = mock(GenerateCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final GenerateCollectionSheetCommand command = GenerateCollectionSheetCommand.locale("en")
+            .calendarId(1L).dateFormat("dd/MM/yyyy").transactionDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1365,7 +1391,10 @@ public class RestGroupServiceTest {
     @Test
     public void testSaveCollectionSheetNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final SaveCollectionSheetCommand command = SaveCollectionSheetCommand.calendarId(1L)
+            .locale("en").dateFormat("dd/MM/yyyy").transactionDate(date)
+            .actualDisbursementDate(date).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1390,7 +1419,10 @@ public class RestGroupServiceTest {
     public void testSaveCollectionSheetDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final SaveCollectionSheetCommand command = SaveCollectionSheetCommand.calendarId(1L)
+            .locale("en").dateFormat("dd/MM/yyyy").transactionDate(date)
+            .actualDisbursementDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1415,7 +1447,10 @@ public class RestGroupServiceTest {
     public void testSaveCollectionSheetInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final SaveCollectionSheetCommand command = SaveCollectionSheetCommand.calendarId(1L)
+            .locale("en").dateFormat("dd/MM/yyyy").transactionDate(date)
+            .actualDisbursementDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1440,7 +1475,10 @@ public class RestGroupServiceTest {
     public void testSaveCollectionSheetNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final SaveCollectionSheetCommand command = SaveCollectionSheetCommand.calendarId(1L)
+            .locale("en").dateFormat("dd/MM/yyyy").transactionDate(date)
+            .actualDisbursementDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1465,7 +1503,10 @@ public class RestGroupServiceTest {
     public void testSaveCollectionSheetUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final SaveCollectionSheetCommand command = mock(SaveCollectionSheetCommand.class);
+        final Date date = new GregorianCalendar(2015, 1, 13).getTime();
+        final SaveCollectionSheetCommand command = SaveCollectionSheetCommand.calendarId(1L)
+            .locale("en").dateFormat("dd/MM/yyyy").transactionDate(date)
+            .actualDisbursementDate(date).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1489,7 +1530,7 @@ public class RestGroupServiceTest {
     @Test
     public void testUnassignStaffNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1514,7 +1555,7 @@ public class RestGroupServiceTest {
     public void testUnassignStaffDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1539,7 +1580,7 @@ public class RestGroupServiceTest {
     public void testUnassignStaffInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1564,7 +1605,7 @@ public class RestGroupServiceTest {
     public void testUnassignStaffNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1589,7 +1630,7 @@ public class RestGroupServiceTest {
     public void testUnassignStaffUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1613,7 +1654,7 @@ public class RestGroupServiceTest {
     @Test
     public void testAssignStaffNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1638,7 +1679,7 @@ public class RestGroupServiceTest {
     public void testAssignStaffDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1663,7 +1704,7 @@ public class RestGroupServiceTest {
     public void testAssignStaffInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1688,7 +1729,7 @@ public class RestGroupServiceTest {
     public void testAssignStaffNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1713,7 +1754,7 @@ public class RestGroupServiceTest {
     public void testAssignStaffUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUnassignStaffCommand command = mock(AssignUnassignStaffCommand.class);
+        final AssignUnassignStaffCommand command = AssignUnassignStaffCommand.staffId(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1737,7 +1778,7 @@ public class RestGroupServiceTest {
     @Test
     public void testCloseGroupNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+        final CloseGroupCommand command = CloseGroupCommand.locale("en").build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1762,7 +1803,7 @@ public class RestGroupServiceTest {
     public void testCloseGroupDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+        final CloseGroupCommand command = CloseGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1787,7 +1828,7 @@ public class RestGroupServiceTest {
     public void testCloseGroupInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+        final CloseGroupCommand command = CloseGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1812,7 +1853,7 @@ public class RestGroupServiceTest {
     public void testCloseGroupNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+        final CloseGroupCommand command = CloseGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1837,7 +1878,7 @@ public class RestGroupServiceTest {
     public void testCloseGroupUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final CloseGroupCommand command = mock(CloseGroupCommand.class);
+        final CloseGroupCommand command = CloseGroupCommand.locale("en").build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1861,7 +1902,7 @@ public class RestGroupServiceTest {
     @Test
     public void testAssignRoleNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1886,7 +1927,7 @@ public class RestGroupServiceTest {
     public void testAssignRoleDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1911,7 +1952,7 @@ public class RestGroupServiceTest {
     public void testAssignRoleInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1936,7 +1977,7 @@ public class RestGroupServiceTest {
     public void testAssignRoleNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1961,7 +2002,7 @@ public class RestGroupServiceTest {
     public void testAssignRoleUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -1985,7 +2026,7 @@ public class RestGroupServiceTest {
     @Test
     public void testUpdateRoleNotConnectedException() {
         final RetrofitError error = mock(RetrofitError.class);
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getKind()).thenReturn(RetrofitError.Kind.NETWORK);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -2010,7 +2051,7 @@ public class RestGroupServiceTest {
     public void testUpdateRoleDuplicateException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 403, "", new ArrayList<Header>(), new TypedString(this.defaultDuplicateJSON));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -2035,7 +2076,7 @@ public class RestGroupServiceTest {
     public void testUpdateRoleInvalidAuthKeyException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 401, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -2060,7 +2101,7 @@ public class RestGroupServiceTest {
     public void testUpdateRoleNotFoundException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 404, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,
@@ -2085,7 +2126,7 @@ public class RestGroupServiceTest {
     public void testUpdateRoleUnknownException() {
         final RetrofitError error = mock(RetrofitError.class);
         final Response response = new Response("", 503, "", new ArrayList<Header>(), new TypedString(""));
-        final AssignUpdateRoleCommand command = mock(AssignUpdateRoleCommand.class);
+        final AssignUpdateRoleCommand command = AssignUpdateRoleCommand.role(1L).build();
 
         when(error.getResponse()).thenReturn(response);
         doThrow(error).when(this.retrofitGroupService).executeCommand(this.mockedAuthKey,

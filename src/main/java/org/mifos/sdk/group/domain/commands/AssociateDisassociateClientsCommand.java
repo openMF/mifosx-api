@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Used for handling 'associate and disassociate clients' of the group command.
  */
-public class AssociateDisassociateClientsCommand {
+public final class AssociateDisassociateClientsCommand {
 
     /**
      * Utility class to ease the process of building a

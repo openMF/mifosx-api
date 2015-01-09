@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Holds the account type information.
  */
-public class AccountType {
+public final class AccountType {
 
     private Long id;
     private String code;

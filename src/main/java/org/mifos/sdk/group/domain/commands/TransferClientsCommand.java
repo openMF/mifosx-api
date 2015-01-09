@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Used for handling 'transfer clients' of the group command.
  */
-public class TransferClientsCommand {
+public final class TransferClientsCommand {
 
     /**
      * Utility class to ease the process of building a

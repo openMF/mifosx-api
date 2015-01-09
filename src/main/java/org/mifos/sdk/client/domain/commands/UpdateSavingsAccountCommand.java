@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'update savings account' of the client command.
  */
-public class UpdateSavingsAccountCommand {
+public final class UpdateSavingsAccountCommand {
 
     /**
      * Utility class to ease the process of building a

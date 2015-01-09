@@ -5,7 +5,12 @@
  */
 package org.mifos.sdk.internal.serializers;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.mifos.sdk.client.domain.ClientIdentifier;
 
 import java.lang.reflect.Type;
@@ -13,7 +18,8 @@ import java.lang.reflect.Type;
 /**
  * JSON serializer for ClientIdentifier.
  */
-public class ClientIdentifierSerializer implements JsonSerializer<ClientIdentifier>, JsonDeserializer<ClientIdentifier> {
+public class ClientIdentifierSerializer implements JsonSerializer<ClientIdentifier>,
+    JsonDeserializer<ClientIdentifier> {
 
     @Override
     public JsonElement serialize(final ClientIdentifier src, Type typeOfSrc,
@@ -54,13 +60,17 @@ public class ClientIdentifierSerializer implements JsonSerializer<ClientIdentifi
         if (jsonObject.has("documentType")) {
             clientIdentifier.setDocumentTypeName(jsonObject.get("documentType").getAsJsonObject()
                 .get("name").getAsString());
-        } else if (jsonObject.has("clientId")) {
+        }
+        if (jsonObject.has("clientId")) {
             clientIdentifier.setClientId(jsonObject.get("clientId").getAsLong());
-        } else if (jsonObject.has("officeId")) {
+        }
+        if (jsonObject.has("officeId")) {
             clientIdentifier.setOfficeId(jsonObject.get("officeId").getAsLong());
-        } else if (jsonObject.has("id")) {
+        }
+        if (jsonObject.has("id")) {
             clientIdentifier.setResourceId(jsonObject.get("id").getAsLong());
-        } else if (jsonObject.has("resourceId")) {
+        }
+        if (jsonObject.has("resourceId")) {
             clientIdentifier.setResourceId(jsonObject.get("resourceId").getAsLong());
         }
 

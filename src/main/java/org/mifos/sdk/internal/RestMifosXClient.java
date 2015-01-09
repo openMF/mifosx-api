@@ -86,6 +86,8 @@ public class RestMifosXClient implements MifosXClient {
     public void logout() {
         this.officeService = null;
         this.staffService = null;
+        this.clientService = null;
+        this.groupService = null;
         this.authenticationKey = null;
         this.loggedIn = false;
     }
@@ -96,13 +98,17 @@ public class RestMifosXClient implements MifosXClient {
      */
     @Override
     public OfficeService officeService() throws MifosXConnectException {
-        if (!loggedIn) {
+        if (!this.loggedIn) {
             throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
         }
 
         if (this.officeService == null) {
-            this.officeService = new RestOfficeService(this.connectionProperties,
-                    this.restAdapter, this.authenticationKey);
+            synchronized(RestOfficeService.class) {
+                if (this.officeService == null) {
+                    this.officeService = new RestOfficeService(this.connectionProperties,
+                        this.restAdapter, this.authenticationKey);
+                }
+            }
         }
 
         return this.officeService;
@@ -114,13 +120,17 @@ public class RestMifosXClient implements MifosXClient {
      */
     @Override
     public StaffService staffService() throws MifosXConnectException {
-        if (!loggedIn) {
+        if (!this.loggedIn) {
             throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
         }
 
         if (this.staffService == null) {
-            this.staffService = new RestStaffService(this.connectionProperties,
-                    this.restAdapter, this.authenticationKey);
+            synchronized(RestStaffService.class) {
+                if (this.staffService == null) {
+                    this.staffService = new RestStaffService(this.connectionProperties,
+                        this.restAdapter, this.authenticationKey);
+                }
+            }
         }
 
         return this.staffService;
@@ -132,13 +142,17 @@ public class RestMifosXClient implements MifosXClient {
      */
     @Override
     public ClientService clientService() throws MifosXConnectException {
-        if (!loggedIn) {
+        if (!this.loggedIn) {
             throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
         }
 
         if (this.clientService == null) {
-            this.clientService = new RestClientService(this.connectionProperties,
-                    this.restAdapter, this.authenticationKey);
+            synchronized(RestClientService.class) {
+                if (this.clientService == null) {
+                    this.clientService = new RestClientService(this.connectionProperties,
+                        this.restAdapter, this.authenticationKey);
+                }
+            }
         }
 
         return this.clientService;
@@ -150,13 +164,17 @@ public class RestMifosXClient implements MifosXClient {
      */
     @Override
     public GroupService groupService() throws MifosXConnectException {
-        if (!loggedIn) {
+        if (!this.loggedIn) {
             throw new MifosXConnectException(ErrorCode.NOT_LOGGED_IN);
         }
 
         if (this.groupService == null) {
-            this.groupService = new RestGroupService(this.connectionProperties,
-                this.restAdapter, this.authenticationKey);
+            synchronized(RestGroupService.class) {
+                if (this.groupService == null) {
+                    this.groupService = new RestGroupService(this.connectionProperties,
+                        this.restAdapter, this.authenticationKey);
+                }
+            }
         }
 
         return this.groupService;
@@ -164,13 +182,14 @@ public class RestMifosXClient implements MifosXClient {
 
     /**
      * Returns the authentication key.
-     * @return the authentication key obtained by calling {@link #login()}
      */
     String getAuthenticationKey() {
         return this.authenticationKey;
     }
 
-    /** Returns whether the client is logged in. */
+    /**
+     * Returns whether the client is logged in.
+     */
     public boolean isLoggedIn() {
         return this.loggedIn;
     }

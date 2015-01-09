@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Interface for a loan account.
  */
-public class LoanAccount {
+public final class LoanAccount {
 
     private Long id;
     private String accountNo;

@@ -34,7 +34,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Group createGroup(Group group) throws MifosXConnectException, MifosXResourceException;
+    Group createGroup(final Group group) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves all available groups.
@@ -42,7 +42,7 @@ public interface GroupService {
      * @return a {@link PageableGroups} with the list of {@link Group}s
      * @throws MifosXConnectException
      */
-    PageableGroups fetchGroups(Map<String, Object> queryMap) throws MifosXConnectException;
+    PageableGroups fetchGroups(final Map<String, Object> queryMap) throws MifosXConnectException;
 
     /**
      * Retrieves oe particular group.
@@ -52,7 +52,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Group findGroup(Long groupId, Map<String, Object> queryMap) throws MifosXConnectException,
+    Group findGroup(final Long groupId, final Map<String, Object> queryMap) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -63,7 +63,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    GroupAccountsSummary findGroupsAccountsSummary(Long groupId, List<String> fields) throws
+    GroupAccountsSummary findGroupsAccountsSummary(final Long groupId, final List<String> fields) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -73,7 +73,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateGroup(Long groupId, Group group) throws MifosXConnectException,
+    void updateGroup(final Long groupId, final Group group) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -82,7 +82,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void deleteGroup(Long groupId) throws MifosXConnectException, MifosXResourceException;
+    void deleteGroup(final Long groupId) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Activates a pending group or results in an error if the group is already activated.
@@ -91,7 +91,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void activateGroup(Long groupId, ActivateGroupCommand command) throws MifosXConnectException,
+    void activateGroup(final Long groupId, final ActivateGroupCommand command) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -101,7 +101,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void associateClients(Long groupId, AssociateDisassociateClientsCommand command) throws
+    void associateClients(final Long groupId, final AssociateDisassociateClientsCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -111,7 +111,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void disassociateClients(Long groupId, AssociateDisassociateClientsCommand command) throws
+    void disassociateClients(final Long groupId, final AssociateDisassociateClientsCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -121,7 +121,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void transferClients(Long groupId, TransferClientsCommand command) throws
+    void transferClients(final Long groupId, final TransferClientsCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -131,7 +131,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void generateCollectionSheet(Long groupId, GenerateCollectionSheetCommand command) throws
+    void generateCollectionSheet(final Long groupId, final GenerateCollectionSheetCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -141,7 +141,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void saveCollectionSheet(Long groupId, SaveCollectionSheetCommand command) throws
+    void saveCollectionSheet(final Long groupId, final SaveCollectionSheetCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -151,7 +151,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void unassignStaff(Long groupId, AssignUnassignStaffCommand command) throws
+    void unassignStaff(final Long groupId, final AssignUnassignStaffCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -161,7 +161,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void assignStaff(Long groupId, AssignUnassignStaffCommand command) throws
+    void assignStaff(final Long groupId, final AssignUnassignStaffCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -171,7 +171,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void closeGroup(Long groupId, CloseGroupCommand command) throws MifosXConnectException,
+    void closeGroup(final Long groupId, final CloseGroupCommand command) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -181,7 +181,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void assignRole(Long groupId, AssignUpdateRoleCommand command) throws
+    void assignRole(final Long groupId, final AssignUpdateRoleCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -191,7 +191,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void unassignRole(Long groupId, Long roleId) throws MifosXConnectException,
+    void unassignRole(final Long groupId, final Long roleId) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -202,7 +202,7 @@ public interface GroupService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateRole(Long groupId, Long roleId, AssignUpdateRoleCommand command) throws
+    void updateRole(final Long groupId, final Long roleId, final AssignUpdateRoleCommand command) throws
         MifosXConnectException, MifosXResourceException;
 
 }
