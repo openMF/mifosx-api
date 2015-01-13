@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Interface for a savings account.
  */
-public class SavingsAccount {
+public final class SavingsAccount {
 
     private Long id;
     private String accountNo;

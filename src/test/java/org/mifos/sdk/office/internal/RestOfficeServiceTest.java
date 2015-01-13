@@ -60,9 +60,10 @@ public class RestOfficeServiceTest {
                 .openingDate(new Date())
                 .locale("en")
                 .dateFormat("dd MMMM yyyy")
-                .parentId((long) 1)
+                .parentId(1L)
                 .build();
-        this.defaultOfficeId = (long)1;
+        this.defaultOfficeId = 1L;
+        this.defaultOffice.setOfficeId(this.defaultOfficeId);
         this.officeService = new RestOfficeService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
@@ -77,10 +78,7 @@ public class RestOfficeServiceTest {
      */
     @Test
     public void testCreateOffice() {
-        final Office mockedOffice = mock(Office.class);
-
-        when(mockedOffice.getOfficeId()).thenReturn(this.defaultOfficeId);
-        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(),             this.defaultOffice)).thenReturn(mockedOffice);
+        when(this.retrofitOfficeService.createOffice(this.mockedAuthKey, this.properties.getTenant(), this.defaultOffice)).thenReturn(this.defaultOffice);
 
         try {
             Long id = this.officeService.createOffice(this.defaultOffice);

@@ -105,11 +105,8 @@ public class GroupSerializer implements JsonSerializer<Group>, JsonDeserializer<
             .build();
 
         if (jsonObject.has("status")) {
-            final StatusCode status = new StatusCode();
-            final JsonObject statusObject = jsonObject.get("status").getAsJsonObject();
-            status.setCode(statusObject.get("code").getAsString());
-            status.setId(statusObject.get("id").getAsLong());
-            status.setValue(statusObject.get("value").getAsString());
+            final StatusCode status = new StatusCodeSerializer().deserialize(jsonObject
+                .get("status"), null, null);
 
             group.setStatus(status);
         }

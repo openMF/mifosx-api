@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Used for handling 'activation' of the group command.
  */
-public class ActivateGroupCommand {
+public final class ActivateGroupCommand {
 
     /**
      * Utility class to ease the process of building a

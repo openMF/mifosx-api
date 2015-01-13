@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Holds the status information.
  */
-public class StatusCode {
+public final class StatusCode {
 
     private Long id;
     private String code;

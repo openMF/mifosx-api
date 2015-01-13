@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'withdraw and reject transfer' of the client commands.
  */
-public class WithdrawRejectClientTransferCommand {
+public final class WithdrawRejectClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a

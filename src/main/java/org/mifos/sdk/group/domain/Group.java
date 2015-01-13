@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Gives an interface to communicate with the Groups API.
  */
-public class Group {
+public final class Group {
 
     /**
      * Utility class to ease the process of building a

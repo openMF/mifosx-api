@@ -5,7 +5,12 @@
  */
 package org.mifos.sdk.internal.serializers;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.mifos.sdk.internal.ParseUtil;
 import org.mifos.sdk.office.domain.Office;
 
@@ -19,7 +24,7 @@ public class OfficeSerializer implements JsonSerializer<Office>, JsonDeserialize
 
     @Override
     public JsonElement serialize(final Office src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject jsonObject = new JsonObject();
+        final JsonObject jsonObject = new JsonObject();
 
         if (src.getName() == null || src.getParentId() == null || src.getOpeningDate() == null) {
             throw new IllegalArgumentException("Office name, parent ID and opening date cannot be null!");
@@ -44,7 +49,8 @@ public class OfficeSerializer implements JsonSerializer<Office>, JsonDeserialize
             }
 
             jsonObject.addProperty("nameDecorated", src.getNameDecorated());
-        } else if (src.getExternalId() != null) {
+        }
+        if (src.getExternalId() != null) {
             if (src.getExternalId().isEmpty()) {
                 throw new IllegalArgumentException("Office external ID cannot be empty!");
             } else if (src.getExternalId().length() > 100) {

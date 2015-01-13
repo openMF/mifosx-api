@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Used for handling 'closing' of the group command.
  */
-public class CloseGroupCommand {
+public final class CloseGroupCommand {
 
     /**
      * Utility class to ease the process of building a

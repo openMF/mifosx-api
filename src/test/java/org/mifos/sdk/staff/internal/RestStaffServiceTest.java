@@ -53,11 +53,11 @@ public class RestStaffServiceTest {
                 .build();
         this.mockedAuthKey = "=hd$$34dd";
         this.defaultStaff = Staff
-                .officeId((long)1)
+                .officeId(1L)
                 .firstname("Jacob")
                 .lastname("Davis")
                 .build();
-        this.defaultStaffId = (long)1;
+        this.defaultStaffId = 1L;
         this.staffService = new RestStaffService(this.properties, restAdapter,
                 this.mockedAuthKey);
         this.mockedAuthKey = "Basic " + this.mockedAuthKey;
@@ -73,16 +73,14 @@ public class RestStaffServiceTest {
      */
     @Test
     public void testCreateStaff() {
-        final Staff mockedStaff = mock(Staff.class);
-
         when(this.retrofitStaffService.createStaff(this.mockedAuthKey, this.properties.getTenant(),
-                this.defaultStaff)).thenReturn(mockedStaff);
+                this.defaultStaff)).thenReturn(this.defaultStaff);
 
         try {
-            Staff staff = this.staffService.createStaff(this.defaultStaff);
+            final Staff staff = this.staffService.createStaff(this.defaultStaff);
 
             Assert.assertNotNull(staff);
-            Assert.assertThat(staff, equalTo(mockedStaff));
+            Assert.assertThat(staff, equalTo(this.defaultStaff));
         } catch (MifosXConnectException e) {
             Assert.fail();
         } catch (MifosXResourceException e) {

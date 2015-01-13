@@ -9,7 +9,10 @@ import com.google.common.base.Preconditions;
 
 import java.util.Date;
 
-public class Staff {
+/**
+ * Gives an interface to communicate with the Staff API.
+ */
+public final class Staff {
 
     /**
      * Utility class to ease the process of building a

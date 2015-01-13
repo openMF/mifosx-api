@@ -10,7 +10,7 @@ import org.mifos.sdk.internal.ErrorCode;
 /**
  * Used for handling connection and authentication related exceptions.
  */
-public class MifosXConnectException extends Exception {
+public final class MifosXConnectException extends Exception {
 
     private ErrorCode errorCode;
 

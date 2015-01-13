@@ -6,13 +6,15 @@
 package org.mifos.sdk.client.domain;
 
 import com.google.common.base.Preconditions;
+import org.mifos.sdk.internal.accounts.StatusCode;
+import org.mifos.sdk.internal.accounts.Timeline;
 
 import java.util.Date;
 
 /**
  * Gives an interface to communicate with the Client API.
  */
-public class Client {
+public final class Client {
 
     /**
      * Utility class to ease the process of building a
@@ -256,6 +258,7 @@ public class Client {
     private Long officeId;
     private boolean active;
     private Date activationDate;
+    private Date submittedOnDate;
     private String dateFormat;
     private String locale;
     private Long groupId;
@@ -270,18 +273,12 @@ public class Client {
     private Long clientId;
     private Long resourceId;
     private String displayName;
-    private String closedByUsername;
-    private String closedByFirstname;
-    private String closedByLastname;
-    private Date submittedOnDate;
-    private Date closingDate;
+    private Timeline timeline;
     private Long imageId;
     private boolean imagePresent;
     private String genderName;
     private String clientTypeName;
-    private Long statusId;
-    private String statusCode;
-    private String statusValue;
+    private StatusCode status;
     private String staffName;
     private String officeName;
     private Long savingsAccountId;
@@ -499,38 +496,10 @@ public class Client {
     }
 
     /**
-     * Returns the closed by username.
-     */
-    public String getClosedByUsername() {
-        return this.closedByUsername;
-    }
-
-    /**
-     * Returns the closed by first name.
-     */
-    public String getClosedByFirstname() {
-        return this.closedByFirstname;
-    }
-
-    /**
-     * Returns the closed by last name.
-     */
-    public String getClosedByLastname() {
-        return this.closedByLastname;
-    }
-
-    /**
      * Returns the submitted on date.
      */
     public Date getSubmittedOnDate() {
         return this.submittedOnDate;
-    }
-
-    /**
-     * Returns the closing date.
-     */
-    public Date getClosingDate() {
-        return this.closingDate;
     }
 
     /**
@@ -559,27 +528,6 @@ public class Client {
      */
     public boolean getImagePresent() {
         return this.imagePresent;
-    }
-
-    /**
-     * Returns the statud ID.
-     */
-    public Long getStatusId() {
-        return this.statusId;
-    }
-
-    /**
-     * Returns the status code.
-     */
-    public String getStatusCode() {
-        return this.statusCode;
-    }
-
-    /**
-     * Returns the status value.
-     */
-    public String getStatusValue() {
-        return this.statusValue;
     }
 
     /**
@@ -635,38 +583,6 @@ public class Client {
     }
 
     /**
-     * Sets the closed by username.
-     * @param name the username
-     */
-    public void setClosedByUsername(final String name) {
-        this.closedByUsername = name;
-    }
-
-    /**
-     * Sets the closed by first name.
-     * @param name the first name
-     */
-    public void setClosedByFirstname(final String name) {
-        this.closedByFirstname = name;
-    }
-
-    /**
-     * Sets the closed by last name.
-     * @param name the last name
-     */
-    public void setClosedByLastname(final String name) {
-        this.closedByLastname = name;
-    }
-
-    /**
-     * Sets the closing date.
-     * @param date the closing date
-     */
-    public void setClosingDate(final Date date) {
-        this.closingDate = date;
-    }
-
-    /**
      * Sets the gender name.
      * @param name the gender name
      */
@@ -699,30 +615,6 @@ public class Client {
     }
 
     /**
-     * Sets the status ID.
-     * @param id the status ID.
-     */
-    public void setStatusId(final Long id) {
-        this.statusId = id;
-    }
-
-    /**
-     * Sets the status code.
-     * @param code the status code.
-     */
-    public void setStatusCode(final String code) {
-        this.statusCode = code;
-    }
-
-    /**
-     * Sets the status value.
-     * @param value the status value
-     */
-    public void setStatusValue(final String value) {
-        this.statusValue = value;
-    }
-
-    /**
      * Sets the staff name.
      * @param name the staff name
      */
@@ -752,6 +644,36 @@ public class Client {
      */
     public void setSavingsId(final Long id) {
         this.savingsId = id;
+    }
+
+    /**
+     * Returns the status.
+     */
+    public StatusCode getStatus() {
+        return this.status;
+    }
+
+    /**
+     * Sets the status.
+     * @param status the status
+     */
+    public void setStatus(final StatusCode status) {
+        this.status = status;
+    }
+
+    /**
+     * Returns the timeline.
+     */
+    public Timeline getTimeline() {
+        return timeline;
+    }
+
+    /**
+     * Sets the timeline.
+     * @param timeline the timeline
+     */
+    public void setTimeline(final Timeline timeline) {
+        this.timeline = timeline;
     }
 
     /**

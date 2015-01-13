@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'propose transfer' of the client command.
  */
-public class ProposeClientTransferCommand {
+public final class ProposeClientTransferCommand {
 
     /**
      * Utility class to ease the process of building a

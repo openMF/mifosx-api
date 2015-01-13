@@ -25,12 +25,12 @@ import org.mifos.sdk.internal.serializers.GroupSerializer;
 import org.mifos.sdk.internal.serializers.OfficeSerializer;
 import org.mifos.sdk.internal.serializers.StaffSerializer;
 import org.mifos.sdk.internal.serializers.TimelineSerializer;
-import org.mifos.sdk.internal.serializers.commands.Client.ActivateClientSerializer;
-import org.mifos.sdk.internal.serializers.commands.Client.CloseClientSerializer;
-import org.mifos.sdk.internal.serializers.commands.Group.ActivateGroupSerializer;
-import org.mifos.sdk.internal.serializers.commands.Group.CloseGroupSerializer;
-import org.mifos.sdk.internal.serializers.commands.Group.GenerateCollectionSheetSerializer;
-import org.mifos.sdk.internal.serializers.commands.Group.SaveCollectionSheetSerializer;
+import org.mifos.sdk.internal.serializers.commands.client.ActivateClientSerializer;
+import org.mifos.sdk.internal.serializers.commands.client.CloseClientSerializer;
+import org.mifos.sdk.internal.serializers.commands.group.ActivateGroupSerializer;
+import org.mifos.sdk.internal.serializers.commands.group.CloseGroupSerializer;
+import org.mifos.sdk.internal.serializers.commands.group.GenerateCollectionSheetSerializer;
+import org.mifos.sdk.internal.serializers.commands.group.SaveCollectionSheetSerializer;
 import org.mifos.sdk.office.domain.Office;
 import org.mifos.sdk.staff.domain.Staff;
 import retrofit.RequestInterceptor;
@@ -49,7 +49,6 @@ public final class MifosXClientFactory {
      */
     public static MifosXClient get(final MifosXProperties properties) {
         final Gson gson = new GsonBuilder()
-                .serializeNulls()
                 .registerTypeAdapter(Timeline.class, new TimelineSerializer())
                 // serializers
                 .registerTypeAdapter(Office.class, new OfficeSerializer())

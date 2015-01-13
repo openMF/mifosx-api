@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * Holds information related to various timeline events.
  */
-public class Event {
+public final class Event {
 
     public enum Type {
         SUBMITTED,

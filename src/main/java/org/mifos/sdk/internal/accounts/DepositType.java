@@ -8,7 +8,7 @@ package org.mifos.sdk.internal.accounts;
 /**
  * Holds the deposit type information.
  */
-public class DepositType {
+public final class DepositType {
 
     private Long id;
     private String code;

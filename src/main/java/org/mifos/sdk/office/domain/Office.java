@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Gives an interface to communicate with the Office API.
  */
-public class Office {
+public final class Office {
 
     /**
      * Utility class to ease the process of building a

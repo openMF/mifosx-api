@@ -28,7 +28,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Client createClient(Client client) throws MifosXConnectException, MifosXResourceException;
+    Client createClient(final Client client) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Retrieves all available clients.
@@ -36,7 +36,7 @@ public interface ClientService {
      * @return a {@link PageableClients} with the list of {@link Client}s
      * @throws MifosXConnectException
      */
-    PageableClients fetchClients(Map<String, Object> queryMap) throws MifosXConnectException;
+    PageableClients fetchClients(final Map<String, Object> queryMap) throws MifosXConnectException;
 
     /**
      * Retrieves one particular client.
@@ -45,7 +45,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    Client findClient(Long clientId) throws MifosXConnectException, MifosXResourceException;
+    Client findClient(final Long clientId) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Updates one particular client.
@@ -54,7 +54,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateClient(Long clientId, Client client) throws MifosXConnectException, MifosXResourceException;
+    void updateClient(final Long clientId, final Client client) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Deletes one particular client.
@@ -62,7 +62,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void deleteClient(Long clientId) throws MifosXConnectException, MifosXResourceException;
+    void deleteClient(final Long clientId) throws MifosXConnectException, MifosXResourceException;
 
     /**
      * Activates a pending client or results in an error if the client is already activated.
@@ -71,7 +71,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void activateClient(Long clientId, ActivateClientCommand command) throws MifosXConnectException,
+    void activateClient(final Long clientId, final ActivateClientCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -81,7 +81,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void closeClient(Long clientId, CloseClientCommand command) throws MifosXConnectException,
+    void closeClient(final Long clientId, final CloseClientCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -91,7 +91,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void assignStaff(Long clientId, AssignUnassignStaffCommand command) throws MifosXConnectException,
+    void assignStaff(final Long clientId, final AssignUnassignStaffCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -101,7 +101,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void unassignStaff(Long clientId, AssignUnassignStaffCommand command) throws MifosXConnectException,
+    void unassignStaff(final Long clientId, final AssignUnassignStaffCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -111,7 +111,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateSavingsAccount(Long clientId, UpdateSavingsAccountCommand command) throws MifosXConnectException,
+    void updateSavingsAccount(final Long clientId, final UpdateSavingsAccountCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -121,7 +121,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void proposeTransfer(Long clientId, ProposeClientTransferCommand command) throws MifosXConnectException,
+    void proposeTransfer(final Long clientId, final ProposeClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -131,7 +131,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void withdrawTransfer(Long clientId, WithdrawRejectClientTransferCommand command) throws MifosXConnectException,
+    void withdrawTransfer(final Long clientId, final WithdrawRejectClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -141,7 +141,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void rejectTransfer(Long clientId, WithdrawRejectClientTransferCommand command) throws MifosXConnectException,
+    void rejectTransfer(final Long clientId, final WithdrawRejectClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -151,7 +151,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void acceptTransfer(Long clientId, AcceptClientTransferCommand command) throws MifosXConnectException,
+    void acceptTransfer(final Long clientId, final AcceptClientTransferCommand command) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -161,7 +161,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void proposeAndAcceptTransfer(Long clientId, ProposeAndAcceptClientTransferCommand command) throws
+    void proposeAndAcceptTransfer(final Long clientId, final ProposeAndAcceptClientTransferCommand command) throws
             MifosXConnectException, MifosXResourceException;
 
     /**
@@ -172,7 +172,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    ClientIdentifier createIdentifier(Long clientId, ClientIdentifier identifier) throws
+    ClientIdentifier createIdentifier(final Long clientId, final ClientIdentifier identifier) throws
             MifosXConnectException, MifosXResourceException;
 
     /**
@@ -182,7 +182,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    List<ClientIdentifier> fetchIdentifiers(Long clientId) throws MifosXConnectException,
+    List<ClientIdentifier> fetchIdentifiers(final Long clientId) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -193,7 +193,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    ClientIdentifier findIdentifier(Long clientId, Long identifierId) throws MifosXConnectException,
+    ClientIdentifier findIdentifier(final Long clientId, final Long identifierId) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -204,7 +204,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateIdentifier(Long clientId, Long identifierId, ClientIdentifier identifier) throws
+    void updateIdentifier(final Long clientId, final Long identifierId, final ClientIdentifier identifier) throws
             MifosXConnectException, MifosXResourceException;
 
     /**
@@ -214,7 +214,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void deleteIdentifier(Long clientId, Long identifierId) throws MifosXConnectException,
+    void deleteIdentifier(final Long clientId, final Long identifierId) throws MifosXConnectException,
             MifosXResourceException;
 
     /**
@@ -225,7 +225,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    ClientImage uploadImage(Long clientId, ClientImage clientImage) throws MifosXConnectException,
+    ClientImage uploadImage(final Long clientId, final ClientImage clientImage) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -237,7 +237,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    ClientImage findImage(Long clientId, Long maxWidth, Long maxHeight) throws
+    ClientImage findImage(final Long clientId, final Long maxWidth, final Long maxHeight) throws
         MifosXConnectException, MifosXResourceException;
 
     /**
@@ -247,7 +247,7 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void updateImage(Long clientId, ClientImage clientImage) throws MifosXConnectException,
+    void updateImage(final Long clientId, final ClientImage clientImage) throws MifosXConnectException,
         MifosXResourceException;
 
     /**
@@ -256,6 +256,6 @@ public interface ClientService {
      * @throws MifosXConnectException
      * @throws MifosXResourceException
      */
-    void deleteImage(Long clientId) throws MifosXConnectException, MifosXResourceException;
+    void deleteImage(final Long clientId) throws MifosXConnectException, MifosXResourceException;
 
 }

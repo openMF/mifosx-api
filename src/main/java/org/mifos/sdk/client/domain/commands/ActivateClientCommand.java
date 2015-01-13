@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Used for handling 'activation' of the client command.
  */
-public class ActivateClientCommand {
+public final class ActivateClientCommand {
 
     /**
      * Utility class to ease the process of building a

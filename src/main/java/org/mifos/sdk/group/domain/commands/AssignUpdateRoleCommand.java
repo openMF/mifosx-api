@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 /**
  * Used for handling 'assign and update role' of the group command.
  */
-public class AssignUpdateRoleCommand {
+public final class AssignUpdateRoleCommand {
 
     /**
      * Utility class to ease the process of building a
